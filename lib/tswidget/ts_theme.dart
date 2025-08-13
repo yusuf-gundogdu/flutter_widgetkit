@@ -78,7 +78,7 @@ TextTheme tsTextThemeForFamily(String family, [TextTheme? base]) {
     case 'Fredoka One':
       return GoogleFonts.fredokaTextTheme(base);
     default:
-      return GoogleFonts.gruppoTextTheme(base);
+      return GoogleFonts.poppinsTextTheme(base);
   }
 }
 
@@ -127,8 +127,45 @@ TextStyle _fontForFamily(String family) {
     case 'Fredoka One':
       return GoogleFonts.fredoka();
     default:
-      return GoogleFonts.gruppo();
+      return GoogleFonts.poppins();
   }
+}
+
+// Builds a TextTheme from TemplateConfig that applies family, size factor,
+// weight, letter spacing and line height consistently across all roles.
+TextTheme tsTextThemeFromConfig(TemplateConfig config, TextTheme base) {
+  final TextTheme familyApplied = tsTextThemeForFamily(config.fontFamily, base);
+  final double baseSize = base.bodyMedium?.fontSize ?? 14.0;
+  final double factor = baseSize > 0 ? (config.fontSize / baseSize) : 1.0;
+
+  TextStyle? applyAll(TextStyle? style) {
+    if (style == null) return null;
+    final double resolvedSize = (style.fontSize ?? baseSize) * factor;
+    return style.copyWith(
+      fontSize: resolvedSize,
+      fontWeight: config.fontWeight,
+      letterSpacing: config.letterSpacing,
+      height: config.lineHeight,
+    );
+  }
+
+  return familyApplied.copyWith(
+    displayLarge: applyAll(familyApplied.displayLarge),
+    displayMedium: applyAll(familyApplied.displayMedium),
+    displaySmall: applyAll(familyApplied.displaySmall),
+    headlineLarge: applyAll(familyApplied.headlineLarge),
+    headlineMedium: applyAll(familyApplied.headlineMedium),
+    headlineSmall: applyAll(familyApplied.headlineSmall),
+    titleLarge: applyAll(familyApplied.titleLarge),
+    titleMedium: applyAll(familyApplied.titleMedium),
+    titleSmall: applyAll(familyApplied.titleSmall),
+    bodyLarge: applyAll(familyApplied.bodyLarge),
+    bodyMedium: applyAll(familyApplied.bodyMedium),
+    bodySmall: applyAll(familyApplied.bodySmall),
+    labelLarge: applyAll(familyApplied.labelLarge),
+    labelMedium: applyAll(familyApplied.labelMedium),
+    labelSmall: applyAll(familyApplied.labelSmall),
+  );
 }
 
 

@@ -11,13 +11,21 @@ class TSSlider extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final config = TSTheme.of(context);
-    return Slider(
-      value: value,
-      onChanged: onChanged,
-      min: min,
-      max: max,
-      activeColor: config.primaryColor,
-      inactiveColor: config.primaryColor.withValues(alpha: 0.3),
+    return Theme(
+      data: Theme.of(context).copyWith(
+        sliderTheme: SliderThemeData(
+          activeTrackColor: Theme.of(context).colorScheme.primary,
+          inactiveTrackColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
+          thumbColor: Theme.of(context).colorScheme.primary,
+          overlayColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.12),
+        ),
+      ),
+      child: Slider(
+        value: value,
+        onChanged: onChanged,
+        min: min,
+        max: max,
+      ),
     );
   }
 }

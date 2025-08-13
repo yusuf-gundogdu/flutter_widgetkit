@@ -91,17 +91,26 @@ class TSMaterialApp extends StatelessWidget {
         theme: ThemeData(
           colorScheme: scheme,
           useMaterial3: true,
-          textTheme: tsTextThemeForFamily(effective.fontFamily, ThemeData.light().textTheme).apply(
+          textTheme: tsTextThemeFromConfig(effective, ThemeData.light().textTheme).apply(
             bodyColor: scheme.onSurface,
             displayColor: scheme.onSurface,
           ),
-          appBarTheme: AppBarTheme(backgroundColor: effective.primaryColor, foregroundColor: Colors.white),
-          elevatedButtonTheme: ElevatedButtonThemeData(
-            style: ElevatedButton.styleFrom(backgroundColor: effective.primaryColor, foregroundColor: Colors.white),
+          appBarTheme: AppBarTheme(
+            backgroundColor: scheme.primary,
+            foregroundColor: scheme.onPrimary,
           ),
-          floatingActionButtonTheme: FloatingActionButtonThemeData(backgroundColor: effective.primaryColor, foregroundColor: Colors.white),
+          elevatedButtonTheme: ElevatedButtonThemeData(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: scheme.primary,
+              foregroundColor: scheme.onPrimary,
+            ),
+          ),
+          floatingActionButtonTheme: FloatingActionButtonThemeData(
+            backgroundColor: scheme.primary,
+            foregroundColor: scheme.onPrimary,
+          ),
           cardTheme: CardThemeData(
-            color: Colors.white,
+            color: scheme.surface,
             elevation: effective.elevation,
             shape: RoundedRectangleBorder(borderRadius: effective.borderRadius),
           ),

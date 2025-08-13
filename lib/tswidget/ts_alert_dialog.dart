@@ -11,9 +11,26 @@ class TSAlertDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     final config = TSTheme.of(context);
     return AlertDialog(
+      backgroundColor: Color.alphaBlend(
+        config.surfaceTintColor.withValues(alpha: config.surfaceTintStrength),
+        Theme.of(context).colorScheme.surface,
+      ),
       shape: RoundedRectangleBorder(borderRadius: config.useRoundedCorners ? config.borderRadius : BorderRadius.zero),
-      title: Text(title, style: const TextStyle(fontWeight: FontWeight.w700)),
-      content: Text(content),
+      title: Text(
+        title,
+        style: tsTextStyleForConfig(
+          config,
+          weight: FontWeight.w700,
+          color: Theme.of(context).colorScheme.onSurface,
+        ),
+      ),
+      content: Text(
+        content,
+        style: tsTextStyleForConfig(
+          config,
+          color: Theme.of(context).colorScheme.onSurface,
+        ),
+      ),
       actions: actions,
     );
   }

@@ -28,8 +28,7 @@ class FontSelector extends StatelessWidget {
                 const SizedBox(width: 8),
                 Text(
                   AppLocalizations.of(context).t('font_title'),
-                  style: GoogleFonts.gruppo().copyWith(
-                    fontSize: 18,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -94,8 +93,7 @@ class FontSelector extends StatelessWidget {
       children: [
         Text(
           AppLocalizations.of(context).t('font_family'),
-          style: GoogleFonts.gruppo().copyWith(
-            fontSize: 14,
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -114,6 +112,9 @@ class FontSelector extends StatelessWidget {
             underline: Container(), // Alt çizgiyi kaldır
             icon: Icon(Icons.arrow_drop_down, color: Theme.of(context).colorScheme.primary),
             dropdownColor: Theme.of(context).colorScheme.surface,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
             menuMaxHeight: 300,
             borderRadius: BorderRadius.circular(8),
             elevation: 4,
@@ -210,16 +211,13 @@ class FontSelector extends StatelessWidget {
           children: [
             Text(
               AppLocalizations.of(context).t('font_size'),
-              style: GoogleFonts.gruppo().copyWith(
-                fontSize: 14,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 fontWeight: FontWeight.w600,
               ),
             ),
             Text(
               '${config.fontSize.round()}px',
-              style: GoogleFonts.gruppo().copyWith(
-                fontSize: 12,
-              ),
+              style: Theme.of(context).textTheme.bodySmall,
             ),
           ],
         ),
@@ -250,8 +248,7 @@ class FontSelector extends StatelessWidget {
       children: [
         Text(
           AppLocalizations.of(context).t('font_weight'),
-          style: GoogleFonts.gruppo().copyWith(
-            fontSize: 14,
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -315,14 +312,13 @@ class FontSelector extends StatelessWidget {
           children: [
             Text(
               AppLocalizations.of(context).t('letter_spacing'),
-              style: GoogleFonts.gruppo().copyWith(
-                fontSize: 14,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 fontWeight: FontWeight.w600,
               ),
             ),
             Text(
               config.letterSpacing.toStringAsFixed(2),
-              style: GoogleFonts.gruppo().copyWith(fontSize: 12),
+              style: Theme.of(context).textTheme.bodySmall,
             ),
           ],
         ),
@@ -348,14 +344,13 @@ class FontSelector extends StatelessWidget {
           children: [
             Text(
               AppLocalizations.of(context).t('line_height'),
-              style: GoogleFonts.gruppo().copyWith(
-                fontSize: 14,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 fontWeight: FontWeight.w600,
               ),
             ),
             Text(
               config.lineHeight.toStringAsFixed(2),
-              style: GoogleFonts.gruppo().copyWith(fontSize: 12),
+              style: Theme.of(context).textTheme.bodySmall,
             ),
           ],
         ),

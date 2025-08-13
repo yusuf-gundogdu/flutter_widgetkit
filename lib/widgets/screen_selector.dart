@@ -32,14 +32,15 @@ class ScreenSelector extends StatelessWidget {
                     children: [
                       Text(
                         'Screen Type',
-                        style: GoogleFonts.gruppo().copyWith(
-                          fontSize: 18,
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       Text(
                         'Pick a screen type and see the preview',
-                         style: GoogleFonts.gruppo().copyWith(fontSize: 12, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7)),
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+                        ),
                       ),
                     ],
                   ),
@@ -107,7 +108,7 @@ class ScreenSelector extends StatelessWidget {
                 color: isSelected 
                     ? color.withValues(alpha: 0.1)
                     : Theme.of(context).colorScheme.surface,
-                borderRadius: BorderRadius.circular(12),
+                 borderRadius: config.useRoundedCorners ? config.borderRadius : BorderRadius.circular(12),
                 border: Border.all(
                   color: isSelected 
                       ? color
@@ -117,15 +118,15 @@ class ScreenSelector extends StatelessWidget {
               ),
               child: Row(
                 children: [
-                  Container(
+                   Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
                        color: isSelected ? color : color.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: config.useRoundedCorners ? BorderRadius.circular(config.borderRadius.topLeft.x) : BorderRadius.circular(8),
                     ),
                     child: Icon(
                       screenType['icon'] as IconData,
-                      color: isSelected ? Colors.white : color,
+                       color: isSelected ? Theme.of(context).colorScheme.onPrimary : color,
                       size: 24,
                     ),
                   ),

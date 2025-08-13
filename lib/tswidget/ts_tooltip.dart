@@ -11,9 +11,14 @@ class TSTooltip extends StatelessWidget {
     final config = TSTheme.of(context);
     return Tooltip(
       message: message,
-      textStyle: const TextStyle(color: Colors.white),
+      textStyle: tsTextStyleForConfig(
+        config,
+        size: (config.fontSize * 0.9).toDouble(),
+        color: Theme.of(context).colorScheme.onPrimary,
+        weight: FontWeight.w600,
+      ),
       decoration: BoxDecoration(
-        color: config.primaryColor,
+        color: Theme.of(context).colorScheme.primary,
         borderRadius: config.useRoundedCorners
             ? BorderRadius.circular(config.borderRadius.topLeft.x)
             : BorderRadius.zero,

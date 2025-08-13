@@ -15,7 +15,11 @@ class TSButton extends StatelessWidget {
     if (filled) {
       return ElevatedButton(
         onPressed: onPressed,
-        style: ElevatedButton.styleFrom(backgroundColor: config.primaryColor, foregroundColor: Colors.white, shape: shape),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Theme.of(context).colorScheme.primary,
+          foregroundColor: Theme.of(context).colorScheme.onPrimary,
+          shape: shape,
+        ),
         child: IconTheme(
           data: IconThemeData(size: config.iconSize),
           child: DefaultTextStyle.merge(style: textStyle, child: child),
@@ -25,8 +29,8 @@ class TSButton extends StatelessWidget {
     return OutlinedButton(
       onPressed: onPressed,
       style: OutlinedButton.styleFrom(
-        foregroundColor: config.primaryColor,
-        side: BorderSide(color: config.primaryColor),
+        foregroundColor: Theme.of(context).colorScheme.primary,
+        side: BorderSide(color: Theme.of(context).colorScheme.primary),
         shape: shape,
       ),
       child: IconTheme(

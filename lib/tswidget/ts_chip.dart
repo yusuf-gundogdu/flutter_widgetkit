@@ -10,17 +10,16 @@ class TSChip extends StatelessWidget {
     final config = TSTheme.of(context);
     return Chip(
       label: DefaultTextStyle.merge(
-        style: TextStyle(
-          fontSize: config.fontSize * 0.95,
-          fontWeight: FontWeight.w600,
-          letterSpacing: config.letterSpacing,
-          height: config.lineHeight,
+        style: tsTextStyleForConfig(
+          config,
+          size: config.fontSize * 0.95,
+          weight: FontWeight.w600,
           color: Theme.of(context).colorScheme.onSurface,
         ),
         child: label,
       ),
-      backgroundColor: config.primaryColor.withValues(alpha: 0.08),
-      shape: StadiumBorder(side: BorderSide(color: config.primaryColor.withValues(alpha: 0.3))),
+      backgroundColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+      shape: StadiumBorder(side: BorderSide(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3))),
     );
   }
 }

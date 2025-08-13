@@ -21,13 +21,13 @@ class TSList extends StatelessWidget {
           decoration: BoxDecoration(
             color: Color.alphaBlend(
               config.surfaceTintColor.withValues(alpha: config.surfaceTintStrength),
-              config.backgroundColor,
+              Theme.of(context).colorScheme.surface,
             ),
             borderRadius: borderRadius,
             boxShadow: config.useShadows
                 ? [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.06),
+                      color: Theme.of(context).colorScheme.shadow.withValues(alpha: 0.06),
                       blurRadius: config.elevation,
                       offset: Offset(0, config.elevation / 2),
                     )
@@ -42,10 +42,10 @@ class TSList extends StatelessWidget {
       return DefaultTextStyle.merge(
         style: tsTextStyleForConfig(config, color: Theme.of(context).colorScheme.onSurface),
         child: ListView.separated(
-        padding: padding ?? const EdgeInsets.all(12),
-        itemCount: children.length,
-        separatorBuilder: (_, __) => const SizedBox(height: 8),
-        itemBuilder: (context, index) => card(Padding(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4), child: children[index])),
+          padding: padding ?? const EdgeInsets.all(12),
+          itemCount: children.length,
+          separatorBuilder: (_, __) => const SizedBox(height: 8),
+          itemBuilder: (context, index) => card(Padding(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4), child: children[index])),
         ),
       );
     }

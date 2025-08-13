@@ -31,7 +31,7 @@ class TemplateConfig {
     this.secondaryColor = const Color(0xFF4C566A), // Nord Darker secondary
     this.accentColor = const Color(0xFF8FBCBB), // Nord Darker accent
     this.backgroundColor = const Color(0xFFF7FAFC),
-    this.fontFamily = 'Inter',
+    this.fontFamily = 'Poppins',
     this.fontSize = 16.0,
     this.fontWeight = FontWeight.w500,
     this.letterSpacing = 0.1,

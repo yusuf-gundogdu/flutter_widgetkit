@@ -10,12 +10,17 @@ class TSRadio<T> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final config = TSTheme.of(context);
-    return Radio<T>(
-      value: value,
-      groupValue: groupValue,
-      onChanged: onChanged,
-      activeColor: config.primaryColor,
-      fillColor: WidgetStateProperty.all(config.primaryColor),
+    return Theme(
+      data: Theme.of(context).copyWith(
+        radioTheme: RadioThemeData(
+          fillColor: WidgetStateProperty.all(Theme.of(context).colorScheme.primary),
+        ),
+      ),
+      child: Radio<T>(
+        value: value,
+        groupValue: groupValue,
+        onChanged: onChanged,
+      ),
     );
   }
 }

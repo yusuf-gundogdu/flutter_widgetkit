@@ -32,15 +32,25 @@ class TSExpansionTile extends StatelessWidget {
         child: ExpansionTile(
           initiallyExpanded: initiallyExpanded,
           leading: leading,
-          iconColor: config.primaryColor,
-          collapsedIconColor: config.primaryColor,
-          title: DefaultTextStyle.merge(style: TextStyle(fontWeight: FontWeight.w600), child: title),
+          iconColor: Theme.of(context).colorScheme.primary,
+          collapsedIconColor: Theme.of(context).colorScheme.primary,
+          title: DefaultTextStyle.merge(
+            style: tsTextStyleForConfig(
+              config,
+              weight: FontWeight.w600,
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
+            child: title,
+          ),
           children: [
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                for (final w in children) ...[w, const SizedBox(height: 8)],
-              ]),
+              child: DefaultTextStyle.merge(
+                style: tsTextStyleForConfig(config, color: Theme.of(context).colorScheme.onSurface),
+                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  for (final w in children) ...[w, const SizedBox(height: 8)],
+                ]),
+              ),
             ),
           ],
         ),

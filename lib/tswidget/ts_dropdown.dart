@@ -14,18 +14,21 @@ class TSDropdown<T> extends StatelessWidget {
       value: value,
       items: items,
       onChanged: onChanged,
-      style: tsTextStyleForConfig(config),
+      style: tsTextStyleForConfig(
+        config,
+        color: Theme.of(context).colorScheme.onSurface,
+      ),
       decoration: InputDecoration(
         border: OutlineInputBorder(borderRadius: config.useRoundedCorners ? config.borderRadius : BorderRadius.zero),
         focusedBorder: OutlineInputBorder(
           borderRadius: config.useRoundedCorners ? config.borderRadius : BorderRadius.zero,
-          borderSide: BorderSide(color: config.primaryColor, width: 2),
+          borderSide: BorderSide(color: Theme.of(context).colorScheme.primary, width: 2),
         ),
         contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       ),
       dropdownColor: Theme.of(context).colorScheme.surface,
       borderRadius: config.useRoundedCorners ? config.borderRadius : BorderRadius.zero,
-      iconEnabledColor: config.primaryColor,
+      iconEnabledColor: Theme.of(context).colorScheme.primary,
     );
   }
 }

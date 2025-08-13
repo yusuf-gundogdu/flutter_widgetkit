@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'tswidget/ts_theme.dart';
 import 'screens/template_studio_screen.dart';
 import 'utils/language_helper.dart';
 import 'l10n/app_localizations.dart';
+import 'models/template_config.dart';
 
 void main() {
   runApp(const TemplateStudioApp());
@@ -17,30 +18,49 @@ class TemplateStudioApp extends StatefulWidget {
 }
 
 class _TemplateStudioAppState extends State<TemplateStudioApp> {
-  // Default to Nord Darker palette
-  Color primaryColor = const Color(0xFF5E81AC);
-  Color secondaryColor = const Color(0xFF4C566A);
-  Color accentColor = const Color(0xFF8FBCBB);
+  TemplateConfig appConfig = TemplateConfig();
   bool isDarkMode = false;
 
-  void updateTheme({
-    required Color primary,
-    required Color secondary,
-    required Color accent,
-    bool? darkMode,
-  }) {
+  void updateConfig(TemplateConfig newConfig) {
     setState(() {
-      primaryColor = primary;
-      secondaryColor = secondary;
-      accentColor = accent;
-      if (darkMode != null) {
-        isDarkMode = darkMode;
-      }
+      appConfig = newConfig;
+    });
+  }
+
+  void toggleDarkMode() {
+    setState(() {
+      isDarkMode = !isDarkMode;
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    final ColorScheme lightScheme = ColorScheme.fromSeed(
+      seedColor: appConfig.primaryColor,
+      brightness: Brightness.light,
+    ).copyWith(
+      primary: appConfig.primaryColor,
+      secondary: appConfig.secondaryColor,
+      tertiary: appConfig.accentColor,
+    );
+
+    final ColorScheme darkSchemeBase = ColorScheme.fromSeed(
+      seedColor: appConfig.primaryColor,
+      brightness: Brightness.dark,
+    ).copyWith(
+      primary: appConfig.primaryColor,
+      secondary: appConfig.secondaryColor,
+      tertiary: appConfig.accentColor,
+    );
+    // Koyu temayı zifiri değil, yumuşak koyu yapmak için yüzeyleri hafifçe aydınlat
+    final Color softenedSurface = Color.alphaBlend(Colors.white.withOpacity(0.06), darkSchemeBase.surface);
+    final Color softenedBackground = Color.alphaBlend(Colors.white.withOpacity(0.04), darkSchemeBase.background);
+    final ColorScheme darkScheme = darkSchemeBase.copyWith(
+      surface: softenedSurface,
+      background: softenedBackground,
+      surfaceVariant: Color.alphaBlend(Colors.white.withOpacity(0.05), darkSchemeBase.surfaceVariant),
+    );
+
     return MaterialApp(
       title: 'Template Studio',
       debugShowCheckedModeBanner: false,
@@ -54,33 +74,28 @@ class _TemplateStudioAppState extends State<TemplateStudioApp> {
       supportedLocales: AppLocalizations.supportedLocales,
       locale: LanguageHelper.getSystemLocale(),
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: primaryColor,
-          brightness: Brightness.light,
-        ).copyWith(
-          primary: primaryColor,
-          secondary: secondaryColor,
-          tertiary: accentColor,
-        ),
+        colorScheme: lightScheme,
         useMaterial3: true,
-        textTheme: GoogleFonts.interTextTheme(),
+        textTheme: tsTextThemeFromConfig(appConfig, ThemeData.light().textTheme),
+        scaffoldBackgroundColor: lightScheme.surface,
+        canvasColor: lightScheme.surface,
         appBarTheme: AppBarTheme(
-          backgroundColor: primaryColor,
+          backgroundColor: appConfig.primaryColor,
           foregroundColor: Colors.white,
           elevation: 0,
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
-            backgroundColor: primaryColor,
+            backgroundColor: appConfig.primaryColor,
             foregroundColor: Colors.white,
           ),
         ),
         floatingActionButtonTheme: FloatingActionButtonThemeData(
-          backgroundColor: primaryColor,
+          backgroundColor: appConfig.primaryColor,
           foregroundColor: Colors.white,
         ),
         cardTheme: CardThemeData(
-          color: Colors.white,
+          color: lightScheme.surface,
           elevation: 2,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
@@ -88,33 +103,29 @@ class _TemplateStudioAppState extends State<TemplateStudioApp> {
         ),
       ),
       darkTheme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: primaryColor,
-          brightness: Brightness.dark,
-        ).copyWith(
-          primary: primaryColor,
-          secondary: secondaryColor,
-          tertiary: accentColor,
-        ),
+        colorScheme: darkScheme,
         useMaterial3: true,
-        textTheme: GoogleFonts.interTextTheme(ThemeData.dark().textTheme),
+        applyElevationOverlayColor: true,
+        textTheme: tsTextThemeFromConfig(appConfig, ThemeData.dark().textTheme),
+        scaffoldBackgroundColor: darkScheme.background,
+        canvasColor: darkScheme.background,
         appBarTheme: AppBarTheme(
-          backgroundColor: primaryColor,
+          backgroundColor: appConfig.primaryColor,
           foregroundColor: Colors.white,
           elevation: 0,
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
-            backgroundColor: primaryColor,
+            backgroundColor: appConfig.primaryColor,
             foregroundColor: Colors.white,
           ),
         ),
         floatingActionButtonTheme: FloatingActionButtonThemeData(
-          backgroundColor: primaryColor,
+          backgroundColor: appConfig.primaryColor,
           foregroundColor: Colors.white,
         ),
         cardTheme: CardThemeData(
-          color: const Color(0xFF1F2937),
+          color: darkScheme.surface,
           elevation: 2,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
@@ -123,11 +134,10 @@ class _TemplateStudioAppState extends State<TemplateStudioApp> {
       ),
       themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
       home: TemplateStudioScreen(
-        onThemeUpdate: updateTheme,
-        currentPrimaryColor: primaryColor,
-        currentSecondaryColor: secondaryColor,
-        currentAccentColor: accentColor,
+        onConfigUpdate: updateConfig,
+        currentConfig: appConfig,
         currentDarkMode: isDarkMode,
+        onDarkModeToggle: toggleDarkMode,
       ),
     );
   }

@@ -9,11 +9,14 @@ class TSFab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final config = TSTheme.of(context);
-    return FloatingActionButton(
-      onPressed: onPressed,
-      backgroundColor: config.primaryColor,
-      foregroundColor: Colors.white,
-      child: child,
+    return IconTheme(
+      data: IconThemeData(size: config.iconSize),
+      child: FloatingActionButton(
+        onPressed: onPressed,
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        foregroundColor: Theme.of(context).colorScheme.onPrimary,
+        child: child,
+      ),
     );
   }
 }

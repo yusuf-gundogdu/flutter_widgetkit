@@ -16,19 +16,21 @@ class TSFormSection extends StatelessWidget {
           width: double.infinity,
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           decoration: BoxDecoration(
-            gradient: config.useGradient ? LinearGradient(colors: [config.primaryColor, config.secondaryColor]) : null,
-            color: config.useGradient ? null : config.primaryColor,
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(config.borderRadius.topLeft.x),
-              topRight: Radius.circular(config.borderRadius.topRight.x),
-            ),
+            gradient: config.useGradient ? LinearGradient(colors: [Theme.of(context).colorScheme.primary, Theme.of(context).colorScheme.secondary]) : null,
+            color: config.useGradient ? null : Theme.of(context).colorScheme.primary,
+            borderRadius: config.useRoundedCorners
+                ? BorderRadius.only(
+                    topLeft: Radius.circular(config.borderRadius.topLeft.x),
+                    topRight: Radius.circular(config.borderRadius.topRight.x),
+                  )
+                : BorderRadius.zero,
           ),
           child: Text(
             title,
             style: tsTextStyleForConfig(
               config,
               weight: FontWeight.w700,
-              color: Colors.white,
+              color: Theme.of(context).colorScheme.onPrimary,
             ),
           ),
         ),
@@ -38,12 +40,14 @@ class TSFormSection extends StatelessWidget {
           decoration: BoxDecoration(
             color: Color.alphaBlend(
               config.surfaceTintColor.withValues(alpha: config.surfaceTintStrength),
-              config.backgroundColor,
+              Theme.of(context).colorScheme.surface,
             ),
-            borderRadius: BorderRadius.only(
-              bottomLeft: Radius.circular(config.borderRadius.bottomLeft.x),
-              bottomRight: Radius.circular(config.borderRadius.bottomRight.x),
-            ),
+            borderRadius: config.useRoundedCorners
+                ? BorderRadius.only(
+                    bottomLeft: Radius.circular(config.borderRadius.bottomLeft.x),
+                    bottomRight: Radius.circular(config.borderRadius.bottomRight.x),
+                  )
+                : BorderRadius.zero,
             border: Border.all(color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.12)),
           ),
           child: DefaultTextStyle.merge(

@@ -28,10 +28,7 @@ class StyleSelector extends StatelessWidget {
                 const SizedBox(width: 8),
                 Text(
                   AppLocalizations.of(context).t('style_settings'),
-                  style: GoogleFonts.gruppo().copyWith(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
                 ),
               ],
             ),
@@ -87,15 +84,12 @@ class StyleSelector extends StatelessWidget {
       {'name': 'Cam (Glass)', 'variant': StyleVariant.glass},
     ];
 
-    return Column(
+        return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           AppLocalizations.of(context).t('style_variant'),
-          style: GoogleFonts.gruppo().copyWith(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-          ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 8),
         Container(
@@ -112,6 +106,9 @@ class StyleSelector extends StatelessWidget {
             underline: Container(), // Alt çizgiyi kaldır
             icon: Icon(Icons.arrow_drop_down, color: Theme.of(context).colorScheme.primary),
             dropdownColor: Theme.of(context).colorScheme.surface,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
             menuMaxHeight: 300,
             borderRadius: BorderRadius.circular(8),
             elevation: 4,
@@ -183,9 +180,7 @@ class StyleSelector extends StatelessWidget {
                     surfaceTintStrength = 0.0;
                     break;
                   case StyleVariant.neumorphic:
-                    background = brightness == Brightness.dark
-                        ? const Color(0xFF1F2937)
-                        : const Color(0xFFEFF3F6);
+                    background = Theme.of(context).colorScheme.surface;
                     useRounded = true;
                     useShadows = true;
                     useGradient = false;
@@ -194,12 +189,12 @@ class StyleSelector extends StatelessWidget {
                     surfaceTintStrength = 0.0;
                     break;
                   case StyleVariant.glass:
-                    background = Colors.white.withValues(alpha: 0.12);
+                    background = Theme.of(context).colorScheme.surface.withValues(alpha: 0.12);
                     useRounded = true;
                     useShadows = true;
                     useGradient = false;
                     elevation = 6;
-                    surfaceTint = Colors.white;
+                    surfaceTint = Theme.of(context).colorScheme.surface;
                     surfaceTintStrength = 0.25;
                     break;
                 }
@@ -233,8 +228,7 @@ class StyleSelector extends StatelessWidget {
           children: [
             Text(
               'Corner Radius',
-              style: GoogleFonts.gruppo().copyWith(
-                fontSize: 14,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 fontWeight: FontWeight.w600,
                 color: Theme.of(context).colorScheme.onSurface
                     .withValues(alpha: config.useRoundedCorners ? 1.0 : 0.5),
@@ -242,8 +236,7 @@ class StyleSelector extends StatelessWidget {
             ),
             Text(
               '${config.borderRadius.topLeft.x.round()}px',
-              style: GoogleFonts.gruppo().copyWith(
-                fontSize: 12,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
                 color: Theme.of(context).colorScheme.onSurface
                     .withValues(alpha: config.useRoundedCorners ? 0.9 : 0.5),
               ),
@@ -268,16 +261,14 @@ class StyleSelector extends StatelessWidget {
           children: [
             Text(
               'Keskin',
-              style: GoogleFonts.gruppo().copyWith(
-                fontSize: 12,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
                 color: Theme.of(context).colorScheme.onSurface
                     .withValues(alpha: config.useRoundedCorners ? 0.8 : 0.5),
               ),
             ),
             Text(
               'Yuvarlak',
-              style: GoogleFonts.gruppo().copyWith(
-                fontSize: 12,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
                 color: Theme.of(context).colorScheme.onSurface
                     .withValues(alpha: config.useRoundedCorners ? 0.8 : 0.5),
               ),
@@ -297,8 +288,7 @@ class StyleSelector extends StatelessWidget {
           children: [
             Text(
               'Shadow Depth',
-              style: GoogleFonts.gruppo().copyWith(
-                fontSize: 14,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 fontWeight: FontWeight.w600,
                 color: Theme.of(context).colorScheme.onSurface
                     .withValues(alpha: config.useShadows ? 1.0 : 0.5),
@@ -306,8 +296,7 @@ class StyleSelector extends StatelessWidget {
             ),
             Text(
               '${config.elevation.round()}',
-              style: GoogleFonts.gruppo().copyWith(
-                fontSize: 12,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
                 color: Theme.of(context).colorScheme.onSurface
                     .withValues(alpha: config.useShadows ? 0.9 : 0.5),
               ),
@@ -330,16 +319,14 @@ class StyleSelector extends StatelessWidget {
           children: [
             Text(
               'Flat',
-              style: GoogleFonts.gruppo().copyWith(
-                fontSize: 12,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
                 color: Theme.of(context).colorScheme.onSurface
                     .withValues(alpha: config.useShadows ? 0.8 : 0.5),
               ),
             ),
             Text(
               'Deep',
-              style: GoogleFonts.gruppo().copyWith(
-                fontSize: 12,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
                 color: Theme.of(context).colorScheme.onSurface
                     .withValues(alpha: config.useShadows ? 0.8 : 0.5),
               ),
@@ -356,8 +343,7 @@ class StyleSelector extends StatelessWidget {
       children: [
         Text(
           AppLocalizations.of(context).t('style_options'),
-          style: GoogleFonts.gruppo().copyWith(
-            fontSize: 14,
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -473,16 +459,15 @@ class StyleSelector extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
+        Text(
               AppLocalizations.of(context).t('icon_size'),
-              style: GoogleFonts.gruppo().copyWith(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-              ),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            fontWeight: FontWeight.w600,
+          ),
             ),
-            Text(
+        Text(
               '${config.iconSize.round()}px',
-              style: GoogleFonts.gruppo().copyWith(fontSize: 12),
+          style: Theme.of(context).textTheme.bodySmall,
             ),
           ],
         ),
@@ -505,8 +490,7 @@ class StyleSelector extends StatelessWidget {
       children: [
         Text(
           AppLocalizations.of(context).t('surface_tint'),
-          style: GoogleFonts.gruppo().copyWith(
-            fontSize: 14,
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
             fontWeight: FontWeight.w600,
           ),
         ),

@@ -19,20 +19,19 @@ class TSBadge extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
             decoration: BoxDecoration(
-              color: config.accentColor,
+              color: Theme.of(context).colorScheme.tertiary,
               borderRadius: BorderRadius.circular(999),
-              border: Border.all(color: Colors.white, width: 2),
+              border: Border.all(color: Theme.of(context).colorScheme.surface, width: 2),
             ),
-            child: Text(
-              label,
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: ((config.fontSize * 0.7).clamp(8.0, 12.0)).toDouble(),
-                fontWeight: FontWeight.w700,
-                letterSpacing: config.letterSpacing,
-                height: config.lineHeight,
-              ),
-            ),
+        child: Text(
+          label,
+          style: tsTextStyleForConfig(
+            config,
+            size: ((config.fontSize * 0.7).clamp(8.0, 12.0)).toDouble(),
+            weight: FontWeight.w700,
+            color: Theme.of(context).colorScheme.onTertiary,
+          ),
+        ),
           ),
         ),
       ],

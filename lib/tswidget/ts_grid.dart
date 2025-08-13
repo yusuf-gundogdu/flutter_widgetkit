@@ -22,11 +22,11 @@ class TSGrid extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: Color.alphaBlend(
                     config.surfaceTintColor.withValues(alpha: config.surfaceTintStrength),
-                    config.backgroundColor,
+                    Theme.of(context).colorScheme.surface,
                   ),
                   borderRadius: config.useRoundedCorners ? config.borderRadius : BorderRadius.zero,
                   boxShadow: config.useShadows
-                      ? [BoxShadow(color: Colors.black.withValues(alpha: 0.06), blurRadius: config.elevation, offset: Offset(0, config.elevation / 2))]
+                      ? [BoxShadow(color: Theme.of(context).colorScheme.shadow.withValues(alpha: 0.06), blurRadius: config.elevation, offset: Offset(0, config.elevation / 2))]
                       : null,
                   border: Border.all(color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.12)),
                 ),

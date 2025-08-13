@@ -9,8 +9,11 @@ class TSLinearProgress extends StatelessWidget {
     final config = TSTheme.of(context);
     return LinearProgressIndicator(
       value: value,
-      color: config.primaryColor,
-      backgroundColor: config.primaryColor.withValues(alpha: 0.2),
+      color: Theme.of(context).colorScheme.primary,
+      backgroundColor: Color.alphaBlend(
+        Theme.of(context).colorScheme.primary.withValues(alpha: 0.08),
+        Theme.of(context).colorScheme.surface,
+      ),
     );
   }
 }
@@ -25,8 +28,8 @@ class TSCircularProgress extends StatelessWidget {
     return CircularProgressIndicator(
       value: value,
       strokeWidth: strokeWidth,
-      color: config.primaryColor,
-      backgroundColor: config.primaryColor.withValues(alpha: 0.2),
+      color: Theme.of(context).colorScheme.primary,
+      backgroundColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.12),
     );
   }
 }

@@ -35,24 +35,17 @@ import '../tswidget/ts_switch.dart';
 // import '../tswidget/ts_expansion_tile.dart';
 
 class TemplateStudioScreen extends StatefulWidget {
-  final Function({
-    required Color primary,
-    required Color secondary,
-    required Color accent,
-    bool? darkMode,
-  }) onThemeUpdate;
-  final Color currentPrimaryColor;
-  final Color currentSecondaryColor;
-  final Color currentAccentColor;
+  final Function(TemplateConfig) onConfigUpdate;
+  final TemplateConfig currentConfig;
   final bool currentDarkMode;
+  final VoidCallback onDarkModeToggle;
 
   const TemplateStudioScreen({
     super.key,
-    required this.onThemeUpdate,
-    required this.currentPrimaryColor,
-    required this.currentSecondaryColor,
-    required this.currentAccentColor,
+    required this.onConfigUpdate,
+    required this.currentConfig,
     required this.currentDarkMode,
+    required this.onDarkModeToggle,
   });
 
   @override
@@ -73,13 +66,7 @@ class _TemplateStudioScreenState extends State<TemplateStudioScreen> {
   @override
   void initState() {
     super.initState();
-    config = TemplateConfig(
-      primaryColor: widget.currentPrimaryColor,
-      secondaryColor: widget.currentSecondaryColor,
-      accentColor: widget.currentAccentColor,
-      backgroundColor: const Color(0xFFF7FAFC),
-      fontFamily: 'Inter',
-    );
+    config = widget.currentConfig;
     _selected.addAll({'List & Detail', 'Form Page', 'Data Table Page', 'E‑commerce Grid', 'Settings Page'});
   }
 
@@ -87,22 +74,11 @@ class _TemplateStudioScreenState extends State<TemplateStudioScreen> {
     setState(() {
       config = newConfig;
     });
-    
-    // Ana tema güncellemesi
-    widget.onThemeUpdate(
-      primary: newConfig.primaryColor,
-      secondary: newConfig.secondaryColor,
-      accent: newConfig.accentColor,
-    );
+    widget.onConfigUpdate(newConfig);
   }
 
   void _toggleTheme() {
-    widget.onThemeUpdate(
-      primary: config.primaryColor,
-      secondary: config.secondaryColor,
-      accent: config.accentColor,
-      darkMode: !widget.currentDarkMode,
-    );
+    widget.onDarkModeToggle();
   }
 
   void _resetTemplate() {
@@ -138,13 +114,14 @@ class _TemplateStudioScreenState extends State<TemplateStudioScreen> {
           ? Drawer(
               child: SafeArea(
                 child: SingleChildScrollView(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(32),
                   child: _buildControls(),
                 ),
               ),
             )
           : null,
-      appBar: AppBar(
+      appBar: TSAppBar(
+        config: config,
         leading: isSmall
             ? Builder(
                 builder: (context) => IconButton(
@@ -155,17 +132,18 @@ class _TemplateStudioScreenState extends State<TemplateStudioScreen> {
             : null,
         title: Row(
           children: [
-            Icon(
+            const Icon(
               Icons.design_services,
               color: Colors.white,
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: 24),
             Text(
               AppLocalizations.of(context).t('app_title'),
-              style: GoogleFonts.gruppo().copyWith(
-                fontWeight: FontWeight.bold,
+              style: tsTextStyleForConfig(
+                config,
+                size: 20,
+                weight: FontWeight.bold,
                 color: Colors.white,
-                fontSize: 20,
               ),
             ),
           ],
@@ -178,10 +156,8 @@ class _TemplateStudioScreenState extends State<TemplateStudioScreen> {
               color: Colors.white,
             ),
           ),
-          const SizedBox(width: 16),
+          const SizedBox(width: 32),
         ],
-        backgroundColor: widget.currentPrimaryColor,
-        elevation: 0,
       ),
       body: Row(
         children: [
@@ -209,13 +185,13 @@ class _TemplateStudioScreenState extends State<TemplateStudioScreen> {
                   : Stack(
                       children: [
                         SingleChildScrollView(
-                          padding: const EdgeInsets.all(16),
+                          padding: const EdgeInsets.all(32),
                           child: _buildControls(),
                         ),
                         if (isMedium)
                           Positioned(
-                            top: 8,
-                            right: 8,
+                            top: 16,
+                            right: 16,
                             child: IconButton(
                               tooltip: isSidebarExpanded ? AppLocalizations.of(context).t('collapse') : AppLocalizations.of(context).t('expand'),
                               icon: Icon(isSidebarExpanded ? Icons.chevron_left : Icons.chevron_right),
@@ -231,7 +207,7 @@ class _TemplateStudioScreenState extends State<TemplateStudioScreen> {
             child: Container(
               color: Colors.transparent,
               child: Padding(
-                padding: const EdgeInsets.only(top: 16),
+                padding: const EdgeInsets.only(top: 32),
                 child: DefaultTextStyle.merge(
                   style: _getGoogleFontForStudio(config.fontFamily).copyWith(
                     fontSize: config.fontSize,
@@ -243,7 +219,7 @@ class _TemplateStudioScreenState extends State<TemplateStudioScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        padding: const EdgeInsets.symmetric(horizontal: 32),
                         child: LayoutBuilder(
                           builder: (context, cons) {
                             final bool isNarrow = cons.maxWidth < 600;
@@ -266,12 +242,12 @@ class _TemplateStudioScreenState extends State<TemplateStudioScreen> {
                                 child: Row(children: [
                                   IconButton(
                                     tooltip: AppLocalizations.of(context).t('compact'),
-                                    icon: Icon(Icons.grid_view, color: !_spacious ? widget.currentPrimaryColor : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6)),
+                                    icon: Icon(Icons.grid_view, color: !_spacious ? config.primaryColor : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6)),
                                     onPressed: () => setState(() => _spacious = false),
                                   ),
                                   IconButton(
                                     tooltip: AppLocalizations.of(context).t('spacious'),
-                                    icon: Icon(Icons.space_dashboard, color: _spacious ? widget.currentPrimaryColor : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6)),
+                                    icon: Icon(Icons.space_dashboard, color: _spacious ? config.primaryColor : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6)),
                                     onPressed: () => setState(() => _spacious = true),
                                   ),
                                 ]),
@@ -302,36 +278,36 @@ class _TemplateStudioScreenState extends State<TemplateStudioScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   title,
-                                  const SizedBox(height: 8),
+                                  const SizedBox(height: 16),
                                   densityToggle,
-                                  const SizedBox(height: 8),
+                                  const SizedBox(height: 16),
                                   actionsColumn,
                                 ],
                               );
                             }
 
-                            return Row(
+                             return Row(
                               children: [
                                 Expanded(
                                   child: Row(
                                     children: [
                                       Flexible(child: title),
-                                      const SizedBox(width: 16),
+                                       const SizedBox(width: 32),
                                       densityToggle,
                                     ],
                                   ),
                                 ),
-                                const SizedBox(width: 8),
+                                 const SizedBox(width: 16),
                                 Wrap(
-                                  spacing: 8,
-                                  runSpacing: 8,
+                                   spacing: 16,
+                                   runSpacing: 16,
                                   children: [
                                     TextButton.icon(
                                       onPressed: () => setState(() => _selected.clear()),
                                       icon: const Icon(Icons.clear_all),
                                       label: Text(AppLocalizations.of(context).t('clear_widget')),
                                     ),
-                                    TextButton.icon(
+                                     TextButton.icon(
                                       onPressed: _resetTemplate,
                                       icon: const Icon(Icons.restart_alt),
                                       label: Text(AppLocalizations.of(context).t('clear_template')),
@@ -343,12 +319,12 @@ class _TemplateStudioScreenState extends State<TemplateStudioScreen> {
                           },
                         ),
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 16),
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        padding: const EdgeInsets.symmetric(horizontal: 32),
                         child: Wrap(
-                          spacing: 8,
-                          runSpacing: 8,
+                          spacing: 16,
+                          runSpacing: 16,
                           children: _options(context).keys.map((k) {
                             final bool picked = _selected.contains(k);
                             return FilterChip(
@@ -367,7 +343,7 @@ class _TemplateStudioScreenState extends State<TemplateStudioScreen> {
                           }).toList(),
                         ),
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 24),
                       Expanded(
                         child: LayoutBuilder(
                           builder: (context, cons) {
@@ -376,10 +352,10 @@ class _TemplateStudioScreenState extends State<TemplateStudioScreen> {
                             final int col = maxW ~/ (base + 12).clamp(1, 999);
                             final double tileW = (col <= 1) ? maxW : base;
                             return SingleChildScrollView(
-                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
                               child: Wrap(
-                                spacing: 16,
-                                runSpacing: 16,
+                                spacing: 32,
+                                runSpacing: 32,
                                 children: [
                                   for (final key in _selected) _buildSample(context, key, tileW),
                                 ],
@@ -478,11 +454,9 @@ class _TemplateStudioScreenState extends State<TemplateStudioScreen> {
   Map<String, Widget Function(BuildContext)> _options(BuildContext context) => {
         // Dashboard kaldırıldı
         'List & Detail': (ctx) => Column(children: [
-              TSAppBar(title: Text(AppLocalizations.of(context).t('records'))),
-              const SizedBox(height: 12),
               Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Expanded(child: SizedBox(height: 320, child: TSList(children: [for (int i = 0; i < 6; i++) TSListTile(title: Text('${AppLocalizations.of(context).t('item')} ${i + 1}'), subtitle: Text(AppLocalizations.of(context).t('description_text')))]))),
-                const SizedBox(width: 12),
+                Expanded(child: SizedBox(height: 320, child: TSList(children: [for (int i = 0; i < 6; i++) TSListTile(decorated: false, title: Text('${AppLocalizations.of(context).t('item')} ${i + 1}'), subtitle: Text(AppLocalizations.of(context).t('description_text')))]))),
+                const SizedBox(width: 24),
                 Expanded(child: TSCard(child: Padding(padding: const EdgeInsets.all(16), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                   Text(
                     AppLocalizations.of(context).t('detail_title'),
@@ -493,12 +467,12 @@ class _TemplateStudioScreenState extends State<TemplateStudioScreen> {
                       height: config.lineHeight,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 16),
                   TSTextField(hint: AppLocalizations.of(context).t('add_note')),
-                  const SizedBox(height: 12),
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
+                  const SizedBox(height: 24),
+                   Wrap(
+                     spacing: 16,
+                     runSpacing: 16,
                     children: [
                       TSButton(onPressed: () {}, child: Text(AppLocalizations.of(context).t('save'))),
                       TSButton(filled: false, onPressed: () {}, child: Text(AppLocalizations.of(context).t('delete'))),
@@ -508,13 +482,11 @@ class _TemplateStudioScreenState extends State<TemplateStudioScreen> {
               ]),
             ]),
         'Form Page': (ctx) => Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              TSAppBar(title: Text(AppLocalizations.of(context).t('new_record'))),
-              const SizedBox(height: 12),
               TSFormSection(title: AppLocalizations.of(context).t('general'), children: [
                 TSTextField(hint: AppLocalizations.of(context).t('first_name')),
                 TSTextField(hint: AppLocalizations.of(context).t('last_name')),
               ]),
-              const SizedBox(height: 8),
+               const SizedBox(height: 16),
               TSFormSection(title: AppLocalizations.of(context).t('contact'), children: [
                 TSTextField(hint: AppLocalizations.of(context).t('email')),
                 TSDropdown<String>(
@@ -526,10 +498,10 @@ class _TemplateStudioScreenState extends State<TemplateStudioScreen> {
                   onChanged: (_) {},
                 )
               ]),
-              const SizedBox(height: 12),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
+              const SizedBox(height: 24),
+               Wrap(
+                spacing: 16,
+                runSpacing: 16,
                 children: [
                   TSButton(onPressed: () {}, child: Text(AppLocalizations.of(context).t('submit'))),
                   TSButton(filled: false, onPressed: () {}, child: Text(AppLocalizations.of(context).t('cancel'))),
@@ -537,8 +509,6 @@ class _TemplateStudioScreenState extends State<TemplateStudioScreen> {
               ),
             ]),
         'Data Table Page': (ctx) => Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              TSAppBar(title: Text(AppLocalizations.of(context).t('reports'))),
-              const SizedBox(height: 12),
               TSTable(columns: ['ID', 'Ad', 'Durum', 'Aksiyon'], rows: [
                 [
                   Text('#1', style: _getGoogleFontForStudio(config.fontFamily)),
@@ -561,20 +531,18 @@ class _TemplateStudioScreenState extends State<TemplateStudioScreen> {
               ]),
             ]),
         'E‑commerce Grid': (ctx) => Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              TSAppBar(title: Text(AppLocalizations.of(context).t('products'))),
-              const SizedBox(height: 12),
               TSTextField(hint: AppLocalizations.of(context).t('search')),
-              const SizedBox(height: 12),
+              const SizedBox(height: 24),
               SizedBox(height: 320, child: TSGrid(children: [
                 for (int i = 0; i < 8; i++)
-                  Padding(padding: const EdgeInsets.all(8), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Padding(padding: const EdgeInsets.all(16), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                     Expanded(
                       child: FittedBox(
                         fit: BoxFit.contain,
                         child: Image.asset('assets/logo.png', width: 96, height: 96),
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 16),
                     Text(
                       '${AppLocalizations.of(context).t('product')} ${i + 1}',
                       style: _getGoogleFontForStudio(config.fontFamily).copyWith(
@@ -584,32 +552,30 @@ class _TemplateStudioScreenState extends State<TemplateStudioScreen> {
                         height: config.lineHeight,
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 8),
                     TSButton(filled: false, onPressed: () {}, child: Text(AppLocalizations.of(context).t('add_to_cart'))),
                   ])),
               ])),
             ]),
         'Settings Page': (ctx) => Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              TSAppBar(title: Text(AppLocalizations.of(context).t('settings'))),
-              const SizedBox(height: 12),
               TSCard(child: Padding(padding: const EdgeInsets.all(12), child: Column(children: [
                 Row(children: [
                   TSSwitch(value: _switchVal, onChanged: (v) => setState(() => _switchVal = v)),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: 16),
                   Text(AppLocalizations.of(context).t('enable_notifications'), style: _getGoogleFontForStudio(config.fontFamily))
                 ]),
-                const SizedBox(height: 8),
+                const SizedBox(height: 16),
                 Row(children: [
                   TSCheckbox(value: _checkVal, onChanged: (v) => setState(() => _checkVal = v ?? false)),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: 16),
                   Text(AppLocalizations.of(context).t('receive_emails'), style: _getGoogleFontForStudio(config.fontFamily))
                 ]),
-                const SizedBox(height: 8),
-                Row(children: [Expanded(child: TSTextField(hint: AppLocalizations.of(context).t('username'))), const SizedBox(width: 8), Expanded(child: TSDropdown<String>(value: 'a', items: const [DropdownMenuItem(value: 'a', child: Text('TR')), DropdownMenuItem(value: 'b', child: Text('EN'))], onChanged: (_) {}))]),
-                const SizedBox(height: 12),
+                const SizedBox(height: 16),
+                Row(children: [Expanded(child: TSTextField(hint: AppLocalizations.of(context).t('username'))), const SizedBox(width: 16), Expanded(child: TSDropdown<String>(value: 'a', items: const [DropdownMenuItem(value: 'a', child: Text('TR')), DropdownMenuItem(value: 'b', child: Text('EN'))], onChanged: (_) {}))]),
+                const SizedBox(height: 24),
                 Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
+                  spacing: 16,
+                  runSpacing: 16,
                   children: [
                     TSButton(onPressed: () {}, child: Text(AppLocalizations.of(context).t('save'))),
                     TSButton(filled: false, onPressed: () {}, child: Text(AppLocalizations.of(context).t('cancel'))),
@@ -637,13 +603,20 @@ class _TemplateStudioScreenState extends State<TemplateStudioScreen> {
     }
   }
 
+  // Primary-only gradient helper for tile headers
+  Color _shade(Color color, double lightnessDelta) {
+    final hsl = HSLColor.fromColor(color);
+    final double l = (hsl.lightness + lightnessDelta).clamp(0.0, 1.0).toDouble();
+    return hsl.withLightness(l).toColor();
+  }
+
   Widget _buildSample(BuildContext context, String key, double width) {
     final builder = _options(context)[key]!;
     return Container(
       width: width,
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: config.useRoundedCorners ? config.borderRadius : BorderRadius.zero,
         border: Border.all(color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.12)),
       ),
       child: Column(
@@ -653,13 +626,28 @@ class _TemplateStudioScreenState extends State<TemplateStudioScreen> {
             width: double.infinity,
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
             decoration: BoxDecoration(
-              color: widget.currentPrimaryColor.withValues(alpha: 0.08),
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+              gradient: config.useGradient
+                  ? LinearGradient(
+                      colors: [
+                        _shade(config.primaryColor, 0.08),
+                        _shade(config.primaryColor, -0.12),
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    )
+                  : null,
+              color: config.useGradient ? null : config.primaryColor,
+              borderRadius: config.useRoundedCorners
+                  ? BorderRadius.only(
+                      topLeft: Radius.circular(config.borderRadius.topLeft.x),
+                      topRight: Radius.circular(config.borderRadius.topRight.x),
+                    )
+                  : BorderRadius.zero,
             ),
-            child: Row(
+             child: Row(
               children: [
-                Icon(Icons.widgets, size: 18, color: widget.currentPrimaryColor),
-                const SizedBox(width: 8),
+                Builder(builder: (context) => Icon(Icons.widgets, size: 18, color: Theme.of(context).colorScheme.onPrimary)),
+                 const SizedBox(width: 16),
             Text(
               _localizedOptionTitle(context, key),
               style: _getGoogleFontForStudio(config.fontFamily).copyWith(
@@ -667,12 +655,13 @@ class _TemplateStudioScreenState extends State<TemplateStudioScreen> {
                 fontSize: config.fontSize,
                 letterSpacing: config.letterSpacing,
                 height: config.lineHeight,
+                color: Theme.of(context).colorScheme.onPrimary,
               ),
             ),
               ],
             ),
           ),
-          Padding(padding: const EdgeInsets.all(12), child: builder(context)),
+          Padding(padding: const EdgeInsets.all(24), child: builder(context)),
         ],
       ),
     );

@@ -12,8 +12,8 @@ class TSSwitch extends StatelessWidget {
     return Switch(
       value: value,
       onChanged: onChanged,
-      activeColor: Colors.white,
-      activeTrackColor: config.primaryColor,
+      activeColor: Theme.of(context).colorScheme.onPrimary,
+      activeTrackColor: Theme.of(context).colorScheme.primary,
     );
   }
 }

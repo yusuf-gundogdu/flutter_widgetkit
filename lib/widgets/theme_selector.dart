@@ -29,8 +29,7 @@ class ThemeSelector extends StatelessWidget {
                 const SizedBox(width: 8),
                 Text(
                   AppLocalizations.of(context).t('theme_colors'),
-                  style: GoogleFonts.gruppo().copyWith(
-                    fontSize: 18,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -88,9 +87,7 @@ class ThemeSelector extends StatelessWidget {
         Expanded(
           child: Text(
             label,
-            style: GoogleFonts.gruppo().copyWith(
-              fontSize: 14,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium,
           ),
         ),
         GestureDetector(
@@ -105,9 +102,9 @@ class ThemeSelector extends StatelessWidget {
                 color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.3),
               ),
             ),
-            child: const Icon(
+            child: Icon(
               Icons.colorize,
-              color: Colors.white,
+              color: color.computeLuminance() > 0.5 ? Colors.black : Colors.white,
               size: 20,
             ),
           ),
@@ -129,8 +126,7 @@ class ThemeSelector extends StatelessWidget {
       children: [
         Text(
           AppLocalizations.of(context).t('quick_themes'),
-          style: GoogleFonts.gruppo().copyWith(
-            fontSize: 14,
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -149,6 +145,9 @@ class ThemeSelector extends StatelessWidget {
             underline: Container(), // Alt çizgiyi kaldır
             icon: Icon(Icons.arrow_drop_down, color: Theme.of(context).colorScheme.primary),
             dropdownColor: Theme.of(context).colorScheme.surface,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
             menuMaxHeight: 300,
             borderRadius: BorderRadius.circular(8),
             elevation: 4,

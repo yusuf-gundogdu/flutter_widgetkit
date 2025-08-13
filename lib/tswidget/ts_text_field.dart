@@ -24,7 +24,7 @@ class TSTextField extends StatelessWidget {
           color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
         ),
         border: OutlineInputBorder(borderRadius: radius),
-        focusedBorder: OutlineInputBorder(borderRadius: radius, borderSide: BorderSide(color: config.primaryColor, width: 2)),
+        focusedBorder: OutlineInputBorder(borderRadius: radius, borderSide: BorderSide(color: Theme.of(context).colorScheme.primary, width: 2)),
       ),
     );
   }

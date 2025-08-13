@@ -19,8 +19,11 @@ class TSNavigationBar extends StatelessWidget {
     return NavigationBar(
       selectedIndex: selectedIndex,
       onDestinationSelected: onDestinationSelected,
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      indicatorColor: config.primaryColor.withValues(alpha: 0.12),
+      backgroundColor: Color.alphaBlend(
+        config.surfaceTintColor.withValues(alpha: config.surfaceTintStrength),
+        Theme.of(context).colorScheme.surface,
+      ),
+      indicatorColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.12),
       elevation: config.elevation,
       destinations: destinations,
     );
