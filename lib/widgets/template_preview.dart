@@ -1,367 +1,303 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../tswidget/ts_theme.dart';
-import '../models/template_config.dart';
-import '../l10n/app_localizations.dart';
+import '../tswidget/ts_card.dart';
+import '../tswidget/ts_button.dart';
+import '../tswidget/ts_tabs.dart';
+import '../tswidget/ts_list_tile.dart';
+import '../tswidget/ts_list.dart';
+import '../tswidget/ts_table.dart';
+import '../tswidget/ts_grid.dart';
+import '../tswidget/ts_badge.dart';
+import '../tswidget/ts_chip.dart';
+import '../tswidget/ts_text_field.dart';
+import '../tswidget/ts_checkbox.dart';
+import '../tswidget/ts_switch.dart';
+import '../tswidget/ts_radio.dart';
+import '../tswidget/ts_slider.dart';
+import '../tswidget/ts_progress.dart';
+import '../tswidget/ts_image.dart';
+import '../tswidget/ts_snackbar.dart';
+import '../tswidget/ts_alert_dialog.dart';
+import '../tswidget/ts_bottom_sheet.dart';
+import '../tswidget/ts_tooltip.dart';
+import '../tswidget/ts_navigation_bar.dart';
+import '../tswidget/ts_dropdown.dart';
 
-class TemplatePreview extends StatelessWidget {
-  final TemplateConfig config;
-  final bool showAll;
-  final bool embedded;
+class TemplatePreview extends StatefulWidget {
+  const TemplatePreview({super.key});
 
-  const TemplatePreview({
-    super.key,
-    required this.config,
-    this.showAll = false,
-    this.embedded = false,
-  });
+  @override
+  State<TemplatePreview> createState() => _TemplatePreviewState();
+}
+
+class _TemplatePreviewState extends State<TemplatePreview> {
+  // Form state
+  final TextEditingController nameCtrl = TextEditingController();
+  final TextEditingController emailCtrl = TextEditingController();
+  String dropdownValue = 'Seçiniz';
+  bool checked = true;
+  bool switched = false;
+  String? radioValue = 'A';
+  double sliderValue = 50;
+  int navIndex = 0;
+
+  @override
+  void dispose() {
+    nameCtrl.dispose();
+    emailCtrl.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    if (showAll) {
-      final List<_PreviewItemSpec> items = [
-        _PreviewItemSpec(ScreenType.dashboard, 320),
-        _PreviewItemSpec(ScreenType.list, 520),
-        _PreviewItemSpec(ScreenType.form, 540),
-        _PreviewItemSpec(ScreenType.detail, 460),
-        _PreviewItemSpec(ScreenType.table, 560),
-      ];
+    // Ensure TSTheme is available
+    final config = TSTheme.of(context);
+    final onSurface = Theme.of(context).colorScheme.onSurface;
 
-      return SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            for (int i = 0; i < items.length; i++) ...[
-              Container(
-                margin: const EdgeInsets.symmetric(horizontal: 16),
-                child: IgnorePointer(
-                  ignoring: true,
-                  child: TemplatePreview(
-                    config: config.copyWith(screenType: items[i].type),
-                    embedded: true,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final bool isCompact = constraints.maxHeight < 320;
+        Widget body = Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // Tabbed area
+          (isCompact
+              ? SizedBox(
+                  height: 420,
+                  child: TSTabs(
+                    tabs: const [
+                      Tab(icon: Icon(Icons.dashboard_outlined), text: 'Genel'),
+                      Tab(icon: Icon(Icons.checklist_rtl), text: 'Formlar'),
+                      Tab(icon: Icon(Icons.table_chart_outlined), text: 'Tablo'),
+                      Tab(icon: Icon(Icons.grid_view), text: 'Izgara'),
+                      Tab(icon: Icon(Icons.widgets_outlined), text: 'Bileşenler'),
+                    ],
+                    views: [
+                      _buildOverview(context),
+                      _buildForms(context),
+                      _buildTable(context),
+                      _buildGrid(context),
+                      _buildComponents(context),
+                    ],
+                  ),
+                )
+              : Expanded(
+            child: TSTabs(
+              tabs: const [
+                Tab(icon: Icon(Icons.dashboard_outlined), text: 'Genel'),
+                Tab(icon: Icon(Icons.checklist_rtl), text: 'Formlar'),
+                Tab(icon: Icon(Icons.table_chart_outlined), text: 'Tablo'),
+                Tab(icon: Icon(Icons.grid_view), text: 'Izgara'),
+                Tab(icon: Icon(Icons.widgets_outlined), text: 'Bileşenler'),
+              ],
+              views: [
+                _buildOverview(context),
+                _buildForms(context),
+                _buildTable(context),
+                _buildGrid(context),
+                _buildComponents(context),
+              ],
+            ),
+          )),
+          const SizedBox(height: 16),
+          // Inline navigation preview
+          TSCard(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            child: TSNavigationBar(
+              selectedIndex: navIndex,
+              onDestinationSelected: (i) => setState(() => navIndex = i),
+              destinations: const [
+                NavigationDestination(icon: Icon(Icons.home_outlined), selectedIcon: Icon(Icons.home), label: 'Ana'),
+                NavigationDestination(icon: Icon(Icons.search_outlined), selectedIcon: Icon(Icons.search), label: 'Arama'),
+                NavigationDestination(icon: Icon(Icons.settings_outlined), selectedIcon: Icon(Icons.settings), label: 'Ayarlar'),
+              ],
+            ),
+          ),
+        ],
+      );
+
+        if (isCompact) {
+          return Padding(
+            padding: const EdgeInsets.all(16),
+            child: SingleChildScrollView(child: body),
+          );
+        }
+        return Padding(padding: const EdgeInsets.all(16), child: body);
+      },
+    );
+  }
+
+  Widget _sectionTitle(BuildContext context, String title) {
+    final config = TSTheme.of(context);
+    return Text(
+      title,
+      style: tsTextStyleForConfig(
+        config,
+        size: config.fontSize * 1.1,
+        weight: FontWeight.w700,
+        color: Theme.of(context).colorScheme.onSurface,
+      ),
+    );
+  }
+
+  Widget _buildHeaderCard(BuildContext context) {
+    final config = TSTheme.of(context);
+    final onSurface = Theme.of(context).colorScheme.onSurface;
+    return TSCard(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Canlı Önizleme',
+            style: tsTextStyleForConfig(
+              config,
+              size: config.fontSize * 1.4,
+              weight: FontWeight.w700,
+              color: onSurface,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            'Sağ panelde tema, tipografi ve stil değişikliklerinin bileşenlere etkisini anında görün.',
+            style: tsTextStyleForConfig(
+              config,
+              size: config.fontSize * 0.95,
+              color: onSurface.withValues(alpha: 0.8),
+            ),
+          ),
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 12,
+            runSpacing: 12,
+            children: [
+              TSButton(
+                onPressed: () => showTSSnackBar(context, 'Bir bilgi mesajı…'),
+                child: const Row(children: [Icon(Icons.info_outline), SizedBox(width: 8), Text('Snackbar')]),
+              ),
+              TSButton(
+                filled: false,
+                onPressed: () {
+                  final inheritedConfig = config; // capture TSTheme config
+                  showDialog(
+                    context: context,
+                    builder: (_) => TSTheme(
+                      config: inheritedConfig,
+                      child: const TSAlertDialog(
+                        title: 'Onay',
+                        content: 'Bu bir uyarı diyalog örneğidir.',
+                      ),
+                    ),
+                  );
+                },
+                child: const Row(children: [Icon(Icons.warning_amber), SizedBox(width: 8), Text('Diyalog')]),
+              ),
+              TSButton(
+                onPressed: () => showTSBottomSheet(
+                  context: context,
+                  builder: (ctx) => Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Alt Sayfa', style: tsTextStyleForConfig(config, weight: FontWeight.w700, color: onSurface)),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Bu, modal alt sayfa bileşeni örneğidir.',
+                        style: tsTextStyleForConfig(config, color: onSurface.withValues(alpha: 0.85)),
+                      ),
+                    ],
+                  ),
+                ),
+                child: const Row(children: [Icon(Icons.unfold_more), SizedBox(width: 8), Text('Bottom Sheet')]),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildOverview(BuildContext context) {
+    final config = TSTheme.of(context);
+    final onSurface = Theme.of(context).colorScheme.onSurface;
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          _buildHeaderCard(context),
+          const SizedBox(height: 12),
+          _sectionTitle(context, 'Durum Kartları'),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Expanded(
+                child: TSBadge(
+                  label: '12',
+                  badgeDiameter: 28,
+                  offsetRight: -12,
+                  offsetTop: -12,
+                  child: TSCard(
+                    child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                      Row(children: [
+                        const Icon(Icons.mail_outline),
+                        const SizedBox(width: 8),
+                        Text('Mesajlar', style: tsTextStyleForConfig(config, weight: FontWeight.w600, color: onSurface)),
+                      ]),
+                      const SizedBox(height: 8),
+                      TSLinearProgress(value: 0.6),
+                      const SizedBox(height: 6),
+                      Text('%60 tamamlandı', style: tsTextStyleForConfig(config, size: config.fontSize * 0.9, color: onSurface.withValues(alpha: 0.75))),
+                    ]),
                   ),
                 ),
               ),
-              if (i != items.length - 1) const SizedBox(height: 30),
+              const SizedBox(width: 12),
+              Expanded(
+                child: TSCard(
+                  child: Row(
+                    children: [
+                      const SizedBox(width: 8),
+                      TSCircularProgress(value: 0.72),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                          Text('Kullanıcı Doygunluğu', style: tsTextStyleForConfig(config, weight: FontWeight.w600, color: onSurface)),
+                          const SizedBox(height: 4),
+                          Text('%72', style: tsTextStyleForConfig(config, size: config.fontSize * 1.2, weight: FontWeight.w700, color: onSurface)),
+                        ]),
+                      )
+                    ],
+                  ),
+                ),
+              ),
             ],
-          ],
-        ),
-      );
-    }
-
-    switch (config.screenType) {
-      case ScreenType.dashboard:
-        return _buildDashboardScreen(context);
-      case ScreenType.list:
-        return _buildListScreen(context);
-      case ScreenType.form:
-        return _buildFormScreen(context);
-      case ScreenType.detail:
-        return _buildDetailScreen(context);
-      case ScreenType.table:
-        return _buildTableScreen(context);
-    }
-  }
-
-  
-
-  // Common background decoration based on style variant (without border)
-  BoxDecoration _cardDecoration(BuildContext context) {
-    // ignore: unused_local_variable
-    final ColorScheme scheme = Theme.of(context).colorScheme;
-    Color bg = config.backgroundColor;
-    List<BoxShadow>? shadows = config.useShadows
-        ? [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.06),
-              blurRadius: config.elevation,
-              offset: Offset(0, config.elevation / 2),
-            ),
-          ]
-        : null;
-
-    switch (config.styleVariant) {
-      case StyleVariant.modern:
-        bg = config.backgroundColor;
-        break;
-      case StyleVariant.classic:
-        bg = config.backgroundColor;
-        break;
-      case StyleVariant.minimal:
-        bg = Colors.transparent;
-        shadows = null;
-        break;
-      case StyleVariant.colorful:
-        bg = config.primaryColor.withValues(alpha: 0.05);
-        break;
-      case StyleVariant.neumorphic:
-        bg = Theme.of(context).brightness == Brightness.dark
-            ? const Color(0xFF1F2937)
-            : const Color(0xFFEFF3F6);
-        shadows = config.useShadows
-            ? [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.15),
-                  blurRadius: 16,
-                  offset: const Offset(8, 8),
-                ),
-                const BoxShadow(
-                  color: Colors.white,
-                  blurRadius: 16,
-                  offset: Offset(-8, -8),
-                ),
-              ]
-            : null;
-        break;
-      case StyleVariant.glass:
-        bg = Colors.white.withValues(alpha: 0.12);
-        shadows = config.useShadows
-            ? [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.1),
-                  blurRadius: 12,
-                  offset: const Offset(0, 6),
-                ),
-              ]
-            : null;
-        break;
-    }
-
-    return BoxDecoration(
-      color: Color.alphaBlend(
-        config.surfaceTintColor.withValues(alpha: config.surfaceTintStrength),
-        bg,
-      ),
-      borderRadius: config.useRoundedCorners ? config.borderRadius : BorderRadius.zero,
-      boxShadow: shadows,
-    );
-  }
-
-  // Foreground-only border so it stays visible above children like headers
-  Decoration? _cardBorderDecoration(BuildContext context) {
-    final ColorScheme scheme = Theme.of(context).colorScheme;
-    Color borderColor = scheme.outline.withValues(alpha: 0.2);
-    double borderWidth = 1.0;
-
-    switch (config.styleVariant) {
-      case StyleVariant.modern:
-        borderColor = config.primaryColor.withValues(alpha: 0.2);
-        borderWidth = 2.0;
-        break;
-      case StyleVariant.classic:
-        borderColor = scheme.outline.withValues(alpha: 0.3);
-        borderWidth = 1.0;
-        break;
-      case StyleVariant.minimal:
-        borderWidth = 0.0;
-        break;
-      case StyleVariant.colorful:
-        borderColor = config.primaryColor.withValues(alpha: 0.3);
-        borderWidth = 1.5;
-        break;
-      case StyleVariant.neumorphic:
-        borderWidth = 0.0;
-        break;
-      case StyleVariant.glass:
-        borderColor = Colors.white.withValues(alpha: 0.25);
-        borderWidth = 1.0;
-        break;
-    }
-
-    if (borderWidth <= 0) return null;
-
-    return BoxDecoration(
-      borderRadius: config.useRoundedCorners ? config.borderRadius : BorderRadius.zero,
-      border: Border.all(color: borderColor, width: borderWidth),
-    );
-  }
-
-  // DASHBOARD
-  Widget _buildDashboardScreen(BuildContext context) {
-    return Container(
-      decoration: _cardDecoration(context),
-      foregroundDecoration: _cardBorderDecoration(context),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          _buildSectionHeader(context, AppLocalizations.of(context).t('dashboard'), Icons.dashboard_customize),
-          Padding(
-            padding: const EdgeInsets.all(12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  AppLocalizations.of(context).t('discover_designs'),
-                  style: _getGoogleFont(config.fontFamily).copyWith(
-                    fontSize: config.fontSize,
-                    fontWeight: FontWeight.normal,
-                    color: Theme.of(context).colorScheme.onSurface,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: [
-                    _buildChip(context, AppLocalizations.of(context).t('project'), Icons.folder),
-                    _buildChip(context, AppLocalizations.of(context).t('progress'), Icons.trending_up),
-                    _buildChip(context, AppLocalizations.of(context).t('time'), Icons.access_time),
-                  ],
-                ),
-              ],
-            ),
           ),
-        ],
-      ),
-    );
-  }
-
-  // LIST
-  Widget _buildListScreen(BuildContext context) {
-    final int itemCount = embedded ? 3 : 8;
-    final items = List.generate(itemCount, (i) => 'Item ${i + 1}');
-    return Container(
-      decoration: _cardDecoration(context),
-      foregroundDecoration: _cardBorderDecoration(context),
-      child: Column(
-        children: [
-          _buildSectionHeader(context, AppLocalizations.of(context).t('list'), Icons.list_alt),
-          Padding(
-            padding: const EdgeInsets.all(12),
-            child: ListView.separated(
-              physics: const NeverScrollableScrollPhysics(),
-              shrinkWrap: true,
-              padding: EdgeInsets.zero,
-              itemCount: items.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 8),
-              itemBuilder: (context, index) {
-                return Container(
-                  decoration: _cardDecoration(context),
-                  foregroundDecoration: _cardBorderDecoration(context),
-                  child: ListTile(
-                    dense: true,
-                    visualDensity: const VisualDensity(vertical: -2),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
-                    leading: _buildLeadingAvatar(),
-                    title: Text(
-                      items[index],
-                      style: _getGoogleFont(config.fontFamily).copyWith(
-                        fontSize: config.fontSize,
-                        fontWeight: config.fontWeight,
-                        letterSpacing: config.letterSpacing,
-                        height: config.lineHeight,
-                      ),
-                    ),
-                    subtitle: Text(
-                      AppLocalizations.of(context).t('description_text'),
-                      style: _getGoogleFont(config.fontFamily).copyWith(
-                        fontSize: config.fontSize * 0.9,
-                        letterSpacing: config.letterSpacing,
-                        height: config.lineHeight,
-                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
-                      ),
-                    ),
-                    trailing: const Icon(Icons.chevron_right, size: 18),
-                  ),
-                );
-              },
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildLeadingAvatar() {
-    final double radius = config.useRoundedCorners ? config.borderRadius.topLeft.x : 0;
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(radius),
-      child: Container(
-        width: 40,
-        height: 40,
-        color: config.primaryColor,
-        child: Icon(Icons.work, color: Colors.white, size: config.iconSize),
-      ),
-    );
-  }
-
-  // FORM
-  Widget _buildFormScreen(BuildContext context) {
-    return Container(
-      decoration: _cardDecoration(context),
-      foregroundDecoration: _cardBorderDecoration(context),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Başlık şeridi
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-            decoration: BoxDecoration(
-              gradient: config.useGradient
-                  ? LinearGradient(
-                      colors: [config.primaryColor, config.secondaryColor],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    )
-                  : null,
-              color: config.useGradient ? null : config.primaryColor,
-              borderRadius: config.useRoundedCorners
-                  ? BorderRadius.only(
-                      topLeft: Radius.circular(config.borderRadius.topLeft.x),
-                      topRight: Radius.circular(config.borderRadius.topRight.x),
-                    )
-                  : BorderRadius.zero,
-            ),
+          const SizedBox(height: 12),
+          _sectionTitle(context, 'Öne Çıkan'),
+          const SizedBox(height: 8),
+          TSCard(
             child: Row(
-              children: [
-                Icon(Icons.description, color: Colors.white, size: config.iconSize),
-                const SizedBox(width: 8),
-                Text(
-                  AppLocalizations.of(context).t('project_form'),
-                  style: _getGoogleFont(config.fontFamily).copyWith(
-                    color: Colors.white,
-                    fontSize: config.fontSize * 1.2,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildLabeledField(context, AppLocalizations.of(context).t('project'), 'Template Studio'),
-                const SizedBox(height: 12),
-                _buildLabeledField(context, AppLocalizations.of(context).t('description_text'), '...'),
-                const SizedBox(height: 12),
-                _buildLabeledField(context, AppLocalizations.of(context).t('category'), 'UI/UX'),
-                const SizedBox(height: 16),
+                Expanded(
+                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    Text('Yeni Sürüm', style: tsTextStyleForConfig(config, size: config.fontSize * 1.15, weight: FontWeight.w700, color: onSurface)),
+                    const SizedBox(height: 6),
+                    Text('Tema ve stil değişiklikleri artık canlı önizlemede!', style: tsTextStyleForConfig(config, color: onSurface.withValues(alpha: 0.8))),
+                    const SizedBox(height: 12),
+                    Wrap(spacing: 8, runSpacing: 8, children: const [
+                      TSChip(label: Text('Performans')),
+                      TSChip(label: Text('UI/UX')),
+                      TSChip(label: Text('Material3')),
+                    ]),
+                  ]),
+                ),
+                const SizedBox(width: 12),
                 SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () {},
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: config.primaryColor,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: config.useRoundedCorners ? config.borderRadius : BorderRadius.zero,
-                      ),
-                    ),
-                    child: Text(
-                      AppLocalizations.of(context).t('save'),
-                      style: TextStyle(
-                        fontSize: config.fontSize,
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: config.letterSpacing,
-                        height: config.lineHeight,
-                      ),
-                    ),
-                  ),
+                  width: 160,
+                  height: 120,
+                  child: TSImage(image: const AssetImage('assets/logo.png'), fit: BoxFit.contain),
                 ),
               ],
             ),
@@ -371,50 +307,112 @@ class TemplatePreview extends StatelessWidget {
     );
   }
 
-  // DETAIL
-  Widget _buildDetailScreen(BuildContext context) {
-    return Container(
-      decoration: _cardDecoration(context),
-      foregroundDecoration: _cardBorderDecoration(context),
+  Widget _buildForms(BuildContext context) {
+    final config = TSTheme.of(context);
+    final onSurface = Theme.of(context).colorScheme.onSurface;
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(12),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          _buildSectionHeader(context, AppLocalizations.of(context).t('detail'), Icons.info_outline),
-          Padding(
-            padding: const EdgeInsets.all(12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  height: 160,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    gradient: config.useGradient
-                        ? LinearGradient(
-                            colors: [config.primaryColor, config.secondaryColor],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          )
-                        : null,
-                    color: config.useGradient ? null : config.primaryColor,
-                    borderRadius: config.useRoundedCorners ? config.borderRadius : BorderRadius.zero,
-                  ),
-                  alignment: Alignment.center,
-                  child: const Icon(Icons.design_services, color: Colors.white, size: 56),
-                ),
-                const SizedBox(height: 16),
-                _buildSubTitle(context, AppLocalizations.of(context).t('project')),
-                const SizedBox(height: 8),
-                Text(
-                  AppLocalizations.of(context).t('modern_flexible_system'),
-                  style: tsTextStyleForConfig(
-                    config,
-                    color: Theme.of(context).colorScheme.onSurface,
-                  ),
-                ),
-              ],
+          _sectionTitle(context, 'Girişler'),
+          const SizedBox(height: 8),
+          TSCard(
+            child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+              TSTextField(hint: 'Ad Soyad', controller: nameCtrl),
+              const SizedBox(height: 12),
+              TSTextField(hint: 'E-posta', controller: emailCtrl),
+              const SizedBox(height: 12),
+              TSDropdown<String>(
+                value: dropdownValue,
+                items: const [
+                  DropdownMenuItem(value: 'Seçiniz', child: Text('Seçiniz')),
+                  DropdownMenuItem(value: 'İstanbul', child: Text('İstanbul')),
+                  DropdownMenuItem(value: 'Ankara', child: Text('Ankara')),
+                  DropdownMenuItem(value: 'İzmir', child: Text('İzmir')),
+                ],
+                onChanged: (v) => setState(() => dropdownValue = v ?? dropdownValue),
+              ),
+            ]),
+          ),
+          const SizedBox(height: 12),
+          _sectionTitle(context, 'Seçimler'),
+          const SizedBox(height: 8),
+          TSCard(
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Row(children: [
+                TSCheckbox(value: checked, onChanged: (v) => setState(() => checked = v ?? checked)),
+                const SizedBox(width: 8),
+                Text('Kabul ediyorum', style: tsTextStyleForConfig(config, color: onSurface)),
+              ]),
+              const SizedBox(height: 8),
+              Row(children: [
+                TSSwitch(value: switched, onChanged: (v) => setState(() => switched = v)),
+                const SizedBox(width: 8),
+                Text('Bildirimler', style: tsTextStyleForConfig(config, color: onSurface)),
+              ]),
+              const SizedBox(height: 8),
+              Row(children: [
+                TSRadio<String>(value: 'A', groupValue: radioValue, onChanged: (v) => setState(() => radioValue = v)),
+                Text('Seçenek A', style: tsTextStyleForConfig(config, color: onSurface)),
+                const SizedBox(width: 16),
+                TSRadio<String>(value: 'B', groupValue: radioValue, onChanged: (v) => setState(() => radioValue = v)),
+                Text('Seçenek B', style: tsTextStyleForConfig(config, color: onSurface)),
+              ]),
+            ]),
+          ),
+          const SizedBox(height: 12),
+          _sectionTitle(context, 'Slider'),
+          const SizedBox(height: 8),
+          TSCard(
+            child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+              TSSlider(value: sliderValue, min: 0, max: 100, onChanged: (v) => setState(() => sliderValue = v)),
+              const SizedBox(height: 8),
+              Text('Değer: ${'${sliderValue.toStringAsFixed(0)}'}', style: tsTextStyleForConfig(config, color: onSurface)),
+            ]),
+          ),
+          const SizedBox(height: 12),
+          Row(children: [
+            TSButton(onPressed: () => showTSSnackBar(context, 'Form kaydedildi'), child: const Text('Kaydet')),
+            const SizedBox(width: 12),
+            TSButton(filled: false, onPressed: () => Navigator.of(context).maybePop(), child: const Text('İptal')),
+          ]),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTable(BuildContext context) {
+    final config = TSTheme.of(context);
+    final onSurface = Theme.of(context).colorScheme.onSurface;
+    final columns = ['Ad', 'Durum', 'Rol', 'Skor'];
+    final rows = [
+      ['Elif', 'Aktif', 'Yönetici', '92'],
+      ['Ahmet', 'Pasif', 'Editör', '74'],
+      ['Zeynep', 'Aktif', 'Kullanıcı', '88'],
+      ['Mert', 'Aktif', 'Editör', '81'],
+    ]
+        .map((r) => [
+              Text(r[0], style: tsTextStyleForConfig(config, color: onSurface)),
+              Text(r[1], style: tsTextStyleForConfig(config, color: onSurface)),
+              Text(r[2], style: tsTextStyleForConfig(config, color: onSurface)),
+              Text(r[3], style: tsTextStyleForConfig(config, weight: FontWeight.w700, color: onSurface)),
+            ])
+        .toList();
+
+    return Padding(
+      padding: const EdgeInsets.all(12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          _sectionTitle(context, 'Kullanıcı Tablosu'),
+          const SizedBox(height: 8),
+          Expanded(
+            child: TSCard(
+              child: Padding(
+                padding: const EdgeInsets.all(8),
+                child: TSTable(columns: columns, rows: rows),
+              ),
             ),
           ),
         ],
@@ -422,167 +420,54 @@ class TemplatePreview extends StatelessWidget {
     );
   }
 
-  // TABLE
-  Widget _buildTableScreen(BuildContext context) {
-    final t = AppLocalizations.of(context);
-    final columns = [
-      t.t('id'),
-      t.t('name'),
-      t.t('status'),
-      t.t('score'),
-      t.t('date'),
-      t.t('category'),
-      t.t('tags'),
-      t.t('owner'),
-      t.t('priority'),
-      t.t('action'),
-    ];
-    final int rowCount = embedded ? 3 : 8;
-    final rows = List.generate(rowCount, (i) => {
-          'id': '#${1000 + i}',
-          'name': 'Item ${i + 1}',
-          'status': i % 2 == 0 ? t.t('active') : t.t('passive'),
-          'score': (80 + i).toString(),
-          'date': '2025-09-${(10 + i).toString().padLeft(2, '0')}',
-          'category': ['UI', 'Backend', 'DevOps', 'QA'][i % 4],
-          'tags': ['web', 'mobile', 'api', 'ci'][i % 4],
-          'owner': ['Alice', 'Bob', 'Elena', 'Chris'][i % 4],
-          'priority': ['Low', 'Medium', 'High'][i % 3],
-           'action': t.t('edit'),
-        });
-
-    final TextStyle headerStyle = _getGoogleFont(config.fontFamily).copyWith(
-      fontSize: config.fontSize * 0.95,
-      fontWeight: FontWeight.w700,
-      color: Colors.white,
-    );
-    final TextStyle cellStyle = _getGoogleFont(config.fontFamily).copyWith(
-      fontSize: config.fontSize,
-      fontWeight: config.fontWeight,
-      color: Theme.of(context).colorScheme.onSurface,
-    );
-
-    return Container(
-      decoration: _cardDecoration(context),
-      foregroundDecoration: _cardBorderDecoration(context),
+  Widget _buildGrid(BuildContext context) {
+    final config = TSTheme.of(context);
+    return Padding(
+      padding: const EdgeInsets.all(12),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          _buildSectionHeader(context, AppLocalizations.of(context).t('table'), Icons.grid_on),
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                final bool isTight = constraints.maxWidth < 380;
-                return SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: ConstrainedBox(
-                    constraints: BoxConstraints(minWidth: constraints.maxWidth),
-                    child: DataTable(
-                            headingRowColor: WidgetStateProperty.all(
-                              config.useGradient ? Colors.transparent : config.primaryColor,
-                            ),
-                            headingRowHeight: 44,
-                            dataRowMinHeight: 40,
-                            dataRowMaxHeight: 56,
-                            horizontalMargin: isTight ? 6 : 12,
-                            columnSpacing: isTight ? 8 : 16,
-                            columns: [
-                              for (final c in columns)
-                                DataColumn(
-                                  label: Container(
-                                    padding: EdgeInsets.symmetric(horizontal: isTight ? 4 : 8, vertical: 6),
-                                    decoration: config.useGradient
-                                        ? BoxDecoration(
-                                            gradient: LinearGradient(
-                                              colors: [config.primaryColor, config.secondaryColor],
-                                              begin: Alignment.topLeft,
-                                              end: Alignment.bottomRight,
-                                            ),
-                                            borderRadius: BorderRadius.circular(6),
-                                          )
-                                        : null,
-                                    child: FittedBox(
-                                      alignment: Alignment.centerLeft,
-                                      fit: BoxFit.scaleDown,
-                                      child: Text(
-                                        c,
-                                        style: headerStyle,
-                                        overflow: TextOverflow.ellipsis,
-                                        softWrap: false,
-                                      ),
-                                    ),
+          _sectionTitle(context, 'Ürün Izgarası'),
+          const SizedBox(height: 8),
+          Expanded(
+            child: TSGrid(
+              children: List.generate(8, (i) {
+                return Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: Stack(children: [
+                              Positioned.fill(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8),
+                                  child: TSImage(
+                                    image: const AssetImage('assets/logo.png'),
+                                    fit: BoxFit.contain,
                                   ),
                                 ),
-                            ],
-                            rows: [
-                              for (final r in rows)
-                                DataRow(cells: [
-                                  DataCell(Text(r['id']!, style: cellStyle, overflow: TextOverflow.ellipsis, softWrap: false)),
-                                  DataCell(Text(r['name']!, style: cellStyle, overflow: TextOverflow.ellipsis, softWrap: false)),
-                                  DataCell(Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                    decoration: BoxDecoration(
-                                       color: (r['status'] == t.t('active')
-                                                ? config.accentColor
-                                                : Theme.of(context).colorScheme.outline)
-                                           .withValues(alpha: 0.15),
-                                      borderRadius: config.useRoundedCorners
-                                          ? BorderRadius.circular(config.borderRadius.topLeft.x)
-                                          : BorderRadius.zero,
-                                      border: Border.all(
-                                         color: r['status'] == t.t('active')
-                                             ? config.accentColor
-                                             : Theme.of(context).colorScheme.outline,
-                                      ),
-                                    ),
-                                     child: Row(
-                                       mainAxisSize: MainAxisSize.min,
-                                       children: [
-                                         Icon(Icons.circle, size: config.iconSize * 0.6, color: r['status'] == t.t('active') ? config.accentColor : Theme.of(context).colorScheme.outline),
-                                         const SizedBox(width: 6),
-                                         Text(
-                                      r['status']!,
-                                      style: cellStyle.copyWith(fontWeight: FontWeight.w600),
-                                      overflow: TextOverflow.ellipsis,
-                                      softWrap: false,
-                                         ),
-                                       ],
-                                     ),
-                                  )),
-                                  DataCell(Text(r['score']!, style: cellStyle, overflow: TextOverflow.ellipsis, softWrap: false)),
-                                  DataCell(Text(r['date']!, style: cellStyle, overflow: TextOverflow.ellipsis, softWrap: false)),
-                                  DataCell(Text(r['category']!, style: cellStyle, overflow: TextOverflow.ellipsis, softWrap: false)),
-                                  DataCell(Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                    decoration: BoxDecoration(
-                                       color: config.primaryColor.withValues(alpha: 0.08),
-                                      borderRadius: config.useRoundedCorners
-                                          ? BorderRadius.circular(config.borderRadius.topLeft.x)
-                                          : BorderRadius.zero,
-                                       border: Border.all(color: config.primaryColor.withValues(alpha: 0.3)),
-                                    ),
-                                    child: Text(
-                                      r['tags']!,
-                                      style: cellStyle.copyWith(fontWeight: FontWeight.w600),
-                                      overflow: TextOverflow.ellipsis,
-                                      softWrap: false,
-                                    ),
-                                  )),
-                                  DataCell(Text(r['owner']!, style: cellStyle, overflow: TextOverflow.ellipsis, softWrap: false)),
-                                  DataCell(_buildPriorityBadge(context, r['priority']!, cellStyle)),
-                                  DataCell(Text(
-                                    r['action']!,
-                                    style: cellStyle.copyWith(color: config.primaryColor, fontWeight: FontWeight.w700),
-                                    overflow: TextOverflow.ellipsis,
-                                    softWrap: false,
-                                  )),
-                                ]),
-                            ],
-                    ),
+                              ),
+                            ]),
+                          ),
+                          const SizedBox(height: 8),
+                          Text('Ürün ${i + 1}', style: tsTextStyleForConfig(config, weight: FontWeight.w600, color: Theme.of(context).colorScheme.onSurface)),
+                          const SizedBox(height: 4),
+                          Row(children: [
+                            const TSTooltip(message: 'Sepete ekle', child: Icon(Icons.add_shopping_cart_outlined)),
+                            const Spacer(),
+                            const TSTooltip(message: 'Favorilere ekle', child: Icon(Icons.favorite_outline)),
+                          ]),
+                        ],
+                      ),
+                      
+                    ],
                   ),
                 );
-              },
+              }),
             ),
           ),
         ],
@@ -590,200 +475,58 @@ class TemplatePreview extends StatelessWidget {
     );
   }
 
-  Widget _buildPriorityBadge(BuildContext context, String priority, TextStyle cellStyle) {
-    Color color;
-    switch (priority) {
-      case 'High':
-        color = Colors.redAccent;
-        break;
-      case 'Medium':
-        color = Colors.orangeAccent;
-        break;
-      default:
-        color = Colors.green;
-    }
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.12),
-        borderRadius: config.useRoundedCorners
-            ? BorderRadius.circular(config.borderRadius.topLeft.x)
-            : BorderRadius.zero,
-        border: Border.all(color: color.withValues(alpha: 0.6)),
-      ),
-      child: Text(
-        priority,
-        style: cellStyle.copyWith(
-          fontWeight: FontWeight.w700,
-          color: color.withValues(alpha: 0.9),
-          letterSpacing: config.letterSpacing,
-          height: config.lineHeight,
-        ),
+  Widget _buildComponents(BuildContext context) {
+    final config = TSTheme.of(context);
+    final onSurface = Theme.of(context).colorScheme.onSurface;
+    final items = List.generate(
+      12,
+      (i) => TSListTile(
+        leading: const Icon(Icons.apps),
+        title: Text('Bileşen ${i + 1}'),
+        subtitle: const Text('Açıklama metni'),
+        trailing: const Icon(Icons.chevron_right),
+        onTap: () => showTSSnackBar(context, 'Bileşen ${i + 1}'),
+        decorated: false,
       ),
     );
-  }
 
-  // Helpers
-  Widget _buildChip(BuildContext context, String label, IconData icon) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: _cardDecoration(context),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
+    return Padding(
+      padding: const EdgeInsets.all(12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Icon(icon, size: 16, color: config.primaryColor),
-          const SizedBox(width: 6),
-          Text(
-            label,
-            style: _getGoogleFont(config.fontFamily).copyWith(
-              fontSize: config.fontSize * 0.95,
-              fontWeight: FontWeight.w600,
+          _sectionTitle(context, 'Liste ve Rozetler'),
+          const SizedBox(height: 8),
+          Expanded(
+            child: Row(
+              children: [
+                Expanded(
+                  flex: 2,
+                  child: TSList(children: items),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: TSCard(
+                    child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                      Text('Etiketler', style: tsTextStyleForConfig(config, weight: FontWeight.w700, color: onSurface)),
+                      const SizedBox(height: 8),
+                      Wrap(spacing: 8, runSpacing: 8, children: const [
+                        TSChip(label: Text('Yeni')),
+                        TSChip(label: Text('Popüler')),
+                        TSChip(label: Text('Önerilen')),
+                        TSChip(label: Text('Trend')),
+                        TSChip(label: Text('Güncel')),
+                      ]),
+                    ]),
+                  ),
+                ),
+              ],
             ),
           ),
         ],
       ),
     );
-  }
-
-  // Shared section header used across previews
-  Widget _buildSectionHeader(BuildContext context, String title, IconData icon) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-      decoration: BoxDecoration(
-        gradient: config.useGradient
-            ? LinearGradient(
-                colors: [config.primaryColor, config.secondaryColor],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              )
-            : null,
-        color: config.useGradient ? null : config.primaryColor,
-        borderRadius: config.useRoundedCorners
-            ? BorderRadius.only(
-                topLeft: Radius.circular(config.borderRadius.topLeft.x),
-                topRight: Radius.circular(config.borderRadius.topRight.x),
-              )
-            : BorderRadius.zero,
-      ),
-      child: Row(
-        children: [
-          Icon(icon, color: Colors.white),
-          const SizedBox(width: 8),
-          Text(
-            title,
-            style: _getGoogleFont(config.fontFamily).copyWith(
-              color: Colors.white,
-              fontSize: config.fontSize * 1.2,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSubTitle(BuildContext context, String text) {
-    return Text(
-      text,
-      style: _getGoogleFont(config.fontFamily).copyWith(
-        fontSize: config.fontSize * 1.2,
-        fontWeight: FontWeight.w700,
-        color: config.primaryColor,
-      ),
-    );
-  }
-
-  Widget _buildLabeledField(BuildContext context, String label, String hint) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: _getGoogleFont(config.fontFamily).copyWith(
-            fontSize: config.fontSize,
-            fontWeight: FontWeight.w600,
-            color: config.primaryColor,
-          ),
-        ),
-        const SizedBox(height: 8),
-        TextField(
-          style: _getGoogleFont(config.fontFamily).copyWith(
-            fontSize: config.fontSize,
-            fontWeight: config.fontWeight,
-            color: Theme.of(context).colorScheme.onSurface,
-          ),
-          decoration: InputDecoration(
-            hintText: hint,
-            hintStyle: _getGoogleFont(config.fontFamily).copyWith(
-              fontSize: config.fontSize * 0.95,
-               color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
-            ),
-            border: OutlineInputBorder(
-              borderRadius: config.useRoundedCorners ? config.borderRadius : BorderRadius.zero,
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: config.useRoundedCorners ? config.borderRadius : BorderRadius.zero,
-              borderSide: BorderSide(color: config.primaryColor, width: 2),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  TextStyle _getGoogleFont(String fontFamily) {
-    switch (fontFamily) {
-      case 'Gruppo':
-        return GoogleFonts.gruppo();
-      case 'Inter':
-        return GoogleFonts.inter();
-      case 'Roboto':
-        return GoogleFonts.roboto();
-      case 'Open Sans':
-        return GoogleFonts.openSans();
-      case 'Lato':
-        return GoogleFonts.lato();
-      case 'Poppins':
-        return GoogleFonts.poppins();
-      case 'Montserrat':
-        return GoogleFonts.montserrat();
-      case 'Source Sans 3':
-        return GoogleFonts.sourceSans3();
-      case 'Ubuntu':
-        return GoogleFonts.ubuntu();
-      case 'Nunito':
-        return GoogleFonts.nunito();
-      case 'Work Sans':
-        return GoogleFonts.workSans();
-      case 'Raleway':
-        return GoogleFonts.raleway();
-      case 'PT Sans':
-        return GoogleFonts.ptSans();
-      case 'Noto Sans':
-        return GoogleFonts.notoSans();
-      case 'Merriweather':
-        return GoogleFonts.merriweather();
-      case 'Playfair Display':
-        return GoogleFonts.playfairDisplay();
-      case 'Bebas Neue':
-        return GoogleFonts.bebasNeue();
-      case 'Oswald':
-        return GoogleFonts.oswald();
-      case 'Dancing Script':
-        return GoogleFonts.dancingScript();
-      case 'Pacifico':
-        return GoogleFonts.pacifico();
-      case 'Fredoka One':
-        return GoogleFonts.fredoka();
-      default:
-        return GoogleFonts.gruppo();
-    }
   }
 }
 
-class _PreviewItemSpec {
-  final ScreenType type;
-  final double height;
-  const _PreviewItemSpec(this.type, this.height);
-}
+

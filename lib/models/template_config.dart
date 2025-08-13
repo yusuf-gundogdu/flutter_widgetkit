@@ -36,16 +36,16 @@ class TemplateConfig {
     this.fontWeight = FontWeight.w500,
     this.letterSpacing = 0.1,
     this.lineHeight = 1.3,
-    this.borderRadius = const BorderRadius.all(Radius.circular(12)),
+    this.borderRadius = const BorderRadius.all(Radius.circular(5)),
     this.elevation = 3.0,
     this.screenType = ScreenType.list,
-    this.styleVariant = StyleVariant.modern,
+    this.styleVariant = StyleVariant.classic,
     this.useGradient = false,
-    this.useShadows = true,
+    this.useShadows = false,
     this.useRoundedCorners = true,
     this.iconSize = 20.0,
-    this.surfaceTintColor = const Color(0x00000000),
-    this.surfaceTintStrength = 0.0,
+    this.surfaceTintColor = const Color(0xFF000000),
+    this.surfaceTintStrength = 0.05,
   });
 
   TemplateConfig copyWith({
@@ -98,8 +98,11 @@ class TemplateConfig {
       primaryColor: def.primary,
       secondaryColor: def.secondary,
       accentColor: def.accent,
+      styleVariant: StyleVariant.classic,
       useRoundedCorners: true,
-      useShadows: true,
+      useShadows: false,
+      surfaceTintColor: const Color(0xFF000000),
+      surfaceTintStrength: 0.05,
     );
   }
 } 

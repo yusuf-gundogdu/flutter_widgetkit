@@ -52,13 +52,17 @@ class _TemplateStudioAppState extends State<TemplateStudioApp> {
       secondary: appConfig.secondaryColor,
       tertiary: appConfig.accentColor,
     );
-    // Koyu temayı zifiri değil, yumuşak koyu yapmak için yüzeyleri hafifçe aydınlat
-    final Color softenedSurface = Color.alphaBlend(Colors.white.withOpacity(0.06), darkSchemeBase.surface);
-    final Color softenedBackground = Color.alphaBlend(Colors.white.withOpacity(0.04), darkSchemeBase.background);
+    // Koyu temayı daha yumuşak yapmak için tüm yüzey seviyelerini eşit şekilde aydınlat
+    final Color lift6 = Color.alphaBlend(Colors.white.withValues(alpha: 0.06), darkSchemeBase.surface);
+    final Color lift8 = Color.alphaBlend(Colors.white.withValues(alpha: 0.08), darkSchemeBase.surface);
     final ColorScheme darkScheme = darkSchemeBase.copyWith(
-      surface: softenedSurface,
-      background: softenedBackground,
-      surfaceVariant: Color.alphaBlend(Colors.white.withOpacity(0.05), darkSchemeBase.surfaceVariant),
+      // Ana yüzeyleri ve tüm surface container seviyelerini aydınlat
+      surface: lift8,
+      surfaceContainerLowest: lift6,
+      surfaceContainerLow: lift6,
+      surfaceContainer: lift6,
+      surfaceContainerHigh: lift6,
+      surfaceContainerHighest: lift6,
     );
 
     return MaterialApp(
@@ -107,8 +111,8 @@ class _TemplateStudioAppState extends State<TemplateStudioApp> {
         useMaterial3: true,
         applyElevationOverlayColor: true,
         textTheme: tsTextThemeFromConfig(appConfig, ThemeData.dark().textTheme),
-        scaffoldBackgroundColor: darkScheme.background,
-        canvasColor: darkScheme.background,
+        scaffoldBackgroundColor: darkScheme.surface,
+        canvasColor: darkScheme.surface,
         appBarTheme: AppBarTheme(
           backgroundColor: appConfig.primaryColor,
           foregroundColor: Colors.white,

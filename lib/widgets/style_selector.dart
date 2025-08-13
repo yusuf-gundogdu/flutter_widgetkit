@@ -224,14 +224,17 @@ class StyleSelector extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              'Corner Radius',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-                color: Theme.of(context).colorScheme.onSurface
-                    .withValues(alpha: config.useRoundedCorners ? 1.0 : 0.5),
+            Expanded(
+              child: Text(
+                'Corner Radius',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: Theme.of(context).colorScheme.onSurface
+                      .withValues(alpha: config.useRoundedCorners ? 1.0 : 0.5),
+                ),
               ),
             ),
             Text(
@@ -257,13 +260,16 @@ class StyleSelector extends StatelessWidget {
               : null,
         ),
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              'Keskin',
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Theme.of(context).colorScheme.onSurface
-                    .withValues(alpha: config.useRoundedCorners ? 0.8 : 0.5),
+            Expanded(
+              child: Text(
+                'Keskin',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurface
+                      .withValues(alpha: config.useRoundedCorners ? 0.8 : 0.5),
+                ),
               ),
             ),
             Text(
@@ -284,14 +290,17 @@ class StyleSelector extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              'Shadow Depth',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-                color: Theme.of(context).colorScheme.onSurface
-                    .withValues(alpha: config.useShadows ? 1.0 : 0.5),
+            Expanded(
+              child: Text(
+                'Shadow Depth',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: Theme.of(context).colorScheme.onSurface
+                      .withValues(alpha: config.useShadows ? 1.0 : 0.5),
+                ),
               ),
             ),
             Text(
@@ -314,8 +323,8 @@ class StyleSelector extends StatelessWidget {
               ? (value) => onConfigChanged(config.copyWith(elevation: value))
               : null,
         ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        Wrap(
+          alignment: WrapAlignment.spaceBetween,
           children: [
             Text(
               'Flat',
@@ -457,17 +466,20 @@ class StyleSelector extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-        Text(
-              AppLocalizations.of(context).t('icon_size'),
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            fontWeight: FontWeight.w600,
-          ),
+            Expanded(
+              child: Text(
+                AppLocalizations.of(context).t('icon_size'),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ),
-        Text(
+            Text(
               '${config.iconSize.round()}px',
-          style: Theme.of(context).textTheme.bodySmall,
+              style: Theme.of(context).textTheme.bodySmall,
             ),
           ],
         ),

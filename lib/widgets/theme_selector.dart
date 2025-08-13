@@ -174,7 +174,14 @@ class ThemeSelector extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(width: 8),
-                        Text(AppLocalizations.of(context).t('custom_theme'), style: TextStyle(fontSize: 14)),
+                        Flexible(
+                          child: Text(
+                            AppLocalizations.of(context).t('custom_theme'),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(fontSize: 14),
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -203,7 +210,14 @@ class ThemeSelector extends StatelessWidget {
                               ),
                             ),
                             const SizedBox(width: 8),
-                             Text(p.name, style: TextStyle(fontSize: 14)),
+                            Flexible(
+                              child: Text(
+                                p.name,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(fontSize: 14),
+                              ),
+                            ),
                           ],
                         ),
                       ),
